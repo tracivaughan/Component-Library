@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Responsive Table - Example 2</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: #fff;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+        }
+
+        h1 {
+
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+
+
+        /* IMPORTANT: copy styles from this point forward only*/
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --light-text: #f1f5f9;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --dark-bg: #505a64;
+        }
+
+
+        .ptn-table-wrapper {
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .ptn-table-container {
+            overflow-x: auto;
+            overflow-y: visible;
+            border: 1px solid #ddd;
+            border-radius: 0.25rem;
+            background-color: white;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #999 #f1f1f1;
+        }
+
+        .ptn-table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .ptn-table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .ptn-table-container::-webkit-scrollbar-thumb {
+            background: #999;
+            border-radius: 4px;
+        }
+
+        .ptn-table-container::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        /* Scroll indicators */
+        .ptn-scroll-indicator {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 12px;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .ptn-scroll-indicator.left {
+            left: 214px;
+            /* Positioned after the fixed column */
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.1), transparent);
+        }
+
+        .ptn-scroll-indicator.right {
+            right: 0;
+            background: linear-gradient(to left, rgba(0, 0, 0, 0.1), transparent);
+        }
+
+        .ptn-scroll-indicator.visible {
+            opacity: 1;
+        }
+
+        .ptn-fixed-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--dark-text);
+            min-width: 800px;
+            margin: 0;
+        }
+
+        .ptn-fixed-table th {
+            color: var(--light-text);
+            padding: .75rem;
+            text-align: left;
+            font-weight: 400;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25px;
+            background-color: var(--dark-bg);
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+            text-align: left;
+            border-bottom: 2px solid #495057;
+            white-space: nowrap;
+            z-index: 1;
+        }
+
+        .ptn-fixed-table td {
+            padding: .7rem .75rem;
+            border-bottom: 1px solid var(--border-light);
+            border: 1px solid var(--border-light);
+            white-space: nowrap;
+            vertical-align: top;
+
+        }
+
+        .ptn-fixed-table tbody tr:hover {
+            background-color: #f0f2f3;
+        }
+
+        .ptn-fixed-table tbody tr:nth-child(odd) {
+            background-color: #f8f9fa;
+        }
+
+
+
+        /* adjust  to match rest of site link style */
+        .ptn-fixed-table .name-link {
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .ptn-fixed-table .name-link:hover,
+        .ptn-fixed-table .name-link:focus {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        /*end of link styles */
+
+        .ptn-fixed-table .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ptn-fixed-table .status-th {
+            padding-left: 24px;
+        }
+
+        .ptn-fixed-table .status.positive {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .ptn-fixed-table .status.in-progress {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .ptn-fixed-table .status.pending {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #99d6ff;
+        }
+
+        .ptn-fixed-table .status.negative {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+
+        .ptn-empty-table {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--dark-text);
+            font-weight: 500;
+            border-radius: 8px;
+            background-color: #edf0f4;
+            padding: 1rem
+        }
+
+
+
+        /* Fixed first column */
+        .col-title {
+            width: 210px;
+            font-weight: 500;
+            position: sticky;
+            left: 0;
+            background-color: white;
+            border-right: 2px solid #ddd;
+            z-index: 2;
+        }
+
+        /* Fixed first column header */
+        th.col-title {
+            background-color: #343a40;
+            z-index: 3;
+            /* Higher than regular sticky headers */
+        }
+
+
+
+
+
+        /* Ensure even/odd row colors work with fixed column */
+        tbody tr:nth-child(odd) .col-title {
+            background-color: #f8f9fa;
+        }
+
+        tbody tr:hover .col-title {
+            background-color: #d7dde1;
+        }
+
+        /* Adjust/rename columns to suit needs */
+
+        .col-year {
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .col-director {
+            min-width: 150px;
+        }
+
+        .col-genre {
+            min-width: 120px;
+        }
+
+        .col-runtime {
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .col-budget,
+        .col-boxoffice {
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .col-rating {
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .col-studio {
+            min-width: 150px;
+        }
+
+        /* Rating badges */
+        .rating-badge {
+            padding: 0.4rem 0.65rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+
+        }
+
+        .rating-g {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .rating-pg {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .rating-pg13 {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .rating-r {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            th,
+            td {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .col-title {
+                min-width: 180px;
+            }
+
+
+            .col-director,
+            .col-studio {
+                min-width: 130px;
+            }
+        }
+
+
+
+        /* Screen reader only */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus indicators for keyboard navigation */
+        .ptn-table-container:focus-within {
+            outline: 2px solid #0066cc;
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            th {
+                background-color: #000;
+                border-color: #fff;
+            }
+
+            tbody tr:hover {
+                background-color: #fff;
+                outline: 2px solid #000;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Basic fixed table with horizontal scrolling</h1>
+
+        <!-- START OF TABLE CODE-->
+
+        <!-- In the event of no results, show the empty state; do NOT draw the empty table/table head and have the null result presented *in* the table. The exceptions to this rule are: 1)  if there is a load delay; 2) if the user has filters applied before seeing the resulting table -->
+
+        <!--
+        <p class="ptn-empty-table">
+            There are no active applications to display. (Write a clear, short, user-friendly message.)
+        </p>-->
+        <div class="ptn-table-wrapper">
+            <div class="ptn-scroll-indicator left" aria-hidden="true"></div>
+            <div class="ptn-scroll-indicator right" aria-hidden="true"></div>
+            <div class="ptn-table-container" tabindex="0" role="region"
+                aria-label="Movie database table, use arrow keys or scroll to view all columns">
+
+
+                <table class="ptn-fixed-table">
+                    <caption class="sr-only">
+                        Movie database with details including title, year, director, genre, runtime, budget, box office,
+                        rating, and studio.
+                        The title column is fixed and remains visible while scrolling horizontally through other
+                        columns.
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="col-title">Title</th>
+                            <th scope="col" class="col-year">Year</th>
+                            <th scope="col" class="col-director">Director</th>
+                            <th scope="col" class="col-genre">Genre</th>
+                            <th scope="col" class="col-runtime">Runtime</th>
+                            <th scope="col" class="col-budget">Budget</th>
+                            <th scope="col" class="col-boxoffice">Box Office</th>
+                            <th scope="col" class="col-rating">Rating</th>
+                            <th scope="col" class="col-studio">Studio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-title">The Shawshank Redemption</td>
+                            <td class="col-year">1994</td>
+                            <td class="col-director">Frank Darabont</td>
+                            <td class="col-genre">Drama</td>
+                            <td class="col-runtime">142 min</td>
+                            <td class="col-budget">$25M</td>
+                            <td class="col-boxoffice">$16.3M</td>
+                            <td class="col-rating"><span class="rating-badge rating-r">R</span></td>
+                            <td class="col-studio">Columbia Pictures</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">The Godfather</td>
+                            <td class="col-year">1972</td>
+                            <td class="col-director">Francis Ford Coppola</td>
+                            <td class="col-genre">Crime/Drama</td>
+                            <td class="col-runtime">175 min</td>
+                            <td class="col-budget">$6M</td>
+                            <td class="col-boxoffice">$245.1M</td>
+                            <td class="col-rating"><span class="rating-badge rating-r">R</span></td>
+                            <td class="col-studio">Paramount Pictures</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">The Dark Knight</td>
+                            <td class="col-year">2008</td>
+                            <td class="col-director">Christopher Nolan</td>
+                            <td class="col-genre">Action/Crime</td>
+                            <td class="col-runtime">152 min</td>
+                            <td class="col-budget">$185M</td>
+                            <td class="col-boxoffice">$1.005B</td>
+                            <td class="col-rating"><span class="rating-badge rating-pg13">PG-13</span></td>
+                            <td class="col-studio">Warner Bros.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">Pulp Fiction</td>
+                            <td class="col-year">1994</td>
+                            <td class="col-director">Quentin Tarantino</td>
+                            <td class="col-genre">Crime/Drama</td>
+                            <td class="col-runtime">154 min</td>
+                            <td class="col-budget">$8.5M</td>
+                            <td class="col-boxoffice">$214.2M</td>
+                            <td class="col-rating"><span class="rating-badge rating-r">R</span></td>
+                            <td class="col-studio">Miramax Films</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">Forrest Gump</td>
+                            <td class="col-year">1994</td>
+                            <td class="col-director">Robert Zemeckis</td>
+                            <td class="col-genre">Drama/Comedy</td>
+                            <td class="col-runtime">142 min</td>
+                            <td class="col-budget">$55M</td>
+                            <td class="col-boxoffice">$678.2M</td>
+                            <td class="col-rating"><span class="rating-badge rating-pg13">PG-13</span></td>
+                            <td class="col-studio">Paramount Pictures</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">Inception</td>
+                            <td class="col-year">2010</td>
+                            <td class="col-director">Christopher Nolan</td>
+                            <td class="col-genre">Sci-Fi/Thriller</td>
+                            <td class="col-runtime">148 min</td>
+                            <td class="col-budget">$160M</td>
+                            <td class="col-boxoffice">$836.8M</td>
+                            <td class="col-rating"><span class="rating-badge rating-pg13">PG-13</span></td>
+                            <td class="col-studio">Warner Bros.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">The Matrix</td>
+                            <td class="col-year">1999</td>
+                            <td class="col-director">The Wachowskis</td>
+                            <td class="col-genre">Sci-Fi/Action</td>
+                            <td class="col-runtime">136 min</td>
+                            <td class="col-budget">$63M</td>
+                            <td class="col-boxoffice">$467.2M</td>
+                            <td class="col-rating"><span class="rating-badge rating-r">R</span></td>
+                            <td class="col-studio">Warner Bros.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">Goodfellas</td>
+                            <td class="col-year">1990</td>
+                            <td class="col-director">Martin Scorsese</td>
+                            <td class="col-genre">Crime/Drama</td>
+                            <td class="col-runtime">146 min</td>
+                            <td class="col-budget">$25M</td>
+                            <td class="col-boxoffice">$46.8M</td>
+                            <td class="col-rating"><span class="rating-badge rating-r">R</span></td>
+                            <td class="col-studio">Warner Bros.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">The Lion King</td>
+                            <td class="col-year">1994</td>
+                            <td class="col-director">Roger Allers</td>
+                            <td class="col-genre">Animation/Family</td>
+                            <td class="col-runtime">88 min</td>
+                            <td class="col-budget">$45M</td>
+                            <td class="col-boxoffice">$968.5M</td>
+                            <td class="col-rating"><span class="rating-badge rating-g">G</span></td>
+                            <td class="col-studio">Walt Disney Pictures</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">Titanic</td>
+                            <td class="col-year">1997</td>
+                            <td class="col-director">James Cameron</td>
+                            <td class="col-genre">Romance/Drama</td>
+                            <td class="col-runtime">195 min</td>
+                            <td class="col-budget">$200M</td>
+                            <td class="col-boxoffice">$2.257B</td>
+                            <td class="col-rating"><span class="rating-badge rating-pg13">PG-13</span></td>
+                            <td class="col-studio">Paramount Pictures</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">Avatar</td>
+                            <td class="col-year">2009</td>
+                            <td class="col-director">James Cameron</td>
+                            <td class="col-genre">Sci-Fi/Action</td>
+                            <td class="col-runtime">162 min</td>
+                            <td class="col-budget">$237M</td>
+                            <td class="col-boxoffice">$2.923B</td>
+                            <td class="col-rating"><span class="rating-badge rating-pg13">PG-13</span></td>
+                            <td class="col-studio">20th Century Fox</td>
+                        </tr>
+                        <tr>
+                            <td class="col-title">Avengers: Endgame</td>
+                            <td class="col-year">2019</td>
+                            <td class="col-director">Russo Brothers</td>
+                            <td class="col-genre">Action/Adventure</td>
+                            <td class="col-runtime">181 min</td>
+                            <td class="col-budget">$356M</td>
+                            <td class="col-boxoffice">$2.798B</td>
+                            <td class="col-rating"><span class="rating-badge rating-pg13">PG-13</span></td>
+                            <td class="col-studio">Marvel Studios</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- END OF TABLE CODE-->
+
+
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li>Designed to scroll horizontally if all columns cannot fit within viewport. </li>
+                <li>First column and column headers are fixed when scrolling. </li>
+                <li>Scroll indicators and shadows reinforce that additional content is available.</li>
+                <li>Keyboard accessible: Table container is focusable; arrow keys arrow scrolling.</li>
+                <li>Touch scrolling optimized for mobile.</li>
+                <li>Required caption available to screen readers but accessibly hidden from visual display.</li>
+                <li>Columns have set widths and alignment; adjust to accommodate your needs. </li>
+                <li>Link/focus behaviour will inherit from main stylesheet; make sure those :link, :hover, and :focus
+                    states are accessible. </li>
+                <li>Table will expand to full available width; add constraining container or max-width
+                    if needed.
+                </li>
+            </ul>
+        </section>
+
+    </div>
+
+    <script>
+        // Scroll indicator functionality
+        const tableContainer = document.querySelector('.ptn-table-container');
+        const leftIndicator = document.querySelector('.ptn-scroll-indicator.left');
+        const rightIndicator = document.querySelector('.ptn-scroll-indicator.right');
+
+        function updateScrollIndicators() {
+            const { scrollLeft, scrollWidth, clientWidth } = tableContainer;
+            const maxScrollLeft = scrollWidth - clientWidth;
+
+            // Show left indicator if scrolled right
+            leftIndicator.classList.toggle('visible', scrollLeft > 10);
+
+            // Show right indicator if can scroll further right
+            rightIndicator.classList.toggle('visible', scrollLeft < maxScrollLeft - 10);
+
+            // Add shadow to fixed column when scrolled
+            tableContainer.classList.toggle('scrolled', scrollLeft > 10);
+        }
+
+        // Update indicators on scroll
+        tableContainer.addEventListener('scroll', updateScrollIndicators);
+
+        // Update indicators on window resize
+        window.addEventListener('resize', updateScrollIndicators);
+
+        // Initialize indicators
+        updateScrollIndicators();
+
+        // Enhanced keyboard navigation
+        tableContainer.addEventListener('keydown', function (event) {
+            const scrollAmount = 100;
+
+            switch (event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    tableContainer.scrollLeft -= scrollAmount;
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    tableContainer.scrollLeft += scrollAmount;
+                    break;
+                case 'Home':
+                    if (event.ctrlKey) {
+                        event.preventDefault();
+                        tableContainer.scrollLeft = 0;
+                    }
+                    break;
+                case 'End':
+                    if (event.ctrlKey) {
+                        event.preventDefault();
+                        tableContainer.scrollLeft = tableContainer.scrollWidth;
+                    }
+                    break;
+            }
+        });
+
+        // Announce scroll position to screen readers (throttled)
+        let announceTimeout;
+        tableContainer.addEventListener('scroll', function () {
+            clearTimeout(announceTimeout);
+            announceTimeout = setTimeout(() => {
+                const { scrollLeft, scrollWidth, clientWidth } = tableContainer;
+                const percentage = Math.round((scrollLeft / (scrollWidth - clientWidth)) * 100);
+
+                // Only announce significant changes
+                if (percentage % 25 === 0 || percentage === 0 || percentage === 100) {
+                    const announcement = `Scrolled ${percentage}% horizontally`;
+                    // Create temporary live region for announcement
+                    const liveRegion = document.createElement('div');
+                    liveRegion.setAttribute('aria-live', 'polite');
+                    liveRegion.setAttribute('aria-atomic', 'true');
+                    liveRegion.className = 'sr-only';
+                    liveRegion.textContent = announcement;
+                    document.body.appendChild(liveRegion);
+
+                    setTimeout(() => document.body.removeChild(liveRegion), 1000);
+                }
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>

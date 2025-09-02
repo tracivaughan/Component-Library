@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Responsive Table - Financial data example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: #fff;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+        }
+
+        h1 {
+
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+
+        /* IMPORTANT: copy styles from this point forward only*/
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --light-text: #f1f5f9;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --dark-bg: #505a64;
+            --warning: #721c24;
+        }
+
+        .ptn-table-outline {
+            border: 1px solid #ccc;
+            margin: 1.25rem 0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .ptn-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--dark-text)
+        }
+
+        .ptn-table th {
+            color: var(--light-text);
+            padding: .75rem;
+            text-align: left;
+            font-weight: 400;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25px;
+            background-color: var(--dark-bg);
+            font-weight: 500;
+        }
+
+        .ptn-table td {
+            padding: .75rem;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            border: 1px solid var(--border-light);
+        }
+
+        .ptn-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .ptn-table .name-link {
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .ptn-table .name-link:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        .ptn-table .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ptn-table .status-th {
+            padding-left: 24px;
+        }
+
+        .ptn-table .status.positive {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .ptn-table .status.in-progress {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .ptn-table .status.pending {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #99d6ff;
+        }
+
+        .ptn-table .status.negative {
+            background-color: #f8d7da;
+            color: var(--warning);
+            border: 1px solid #f5c6cb;
+        }
+
+        .ptn-findata {
+            text-align: right;
+        }
+
+        .ptn-negative {
+            color: var(--warning);
+            font-weight: 500;
+            /*uncomment this background color if you want to highlight the whole cell
+            background-color: #f8d7da; */
+        }
+
+        .ptn-table tfoot {
+            background-color: #f8f9fa;
+            border-top: 2px solid var(--dark-bg);
+            font-size: 1.125rem;
+        }
+
+        .ptn-table tfoot th {
+            background-color: #f8f9fa;
+            color: var(--dark-text);
+            font-size: 1rem;
+        }
+
+        .ptn-empty-table {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--dark-text);
+            font-weight: 500;
+            border-radius: 8px;
+            background-color: #edf0f4;
+            padding: 1rem
+        }
+
+        /* Mobile responsive design */
+        @media (max-width: 768px) {
+
+            .ptn-table table,
+            .ptn-table thead,
+            .ptn-table tbody,
+            .ptn-table th,
+            .ptn-table td,
+            .ptn-table tr {
+                display: block;
+            }
+
+            .ptn-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            .ptn-table tr {
+                border: 1px solid #ccc;
+                margin-bottom: .75rem;
+                padding: .75rem;
+                border-radius: 8px;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .ptn-table tr:hover {
+                background-color: white;
+            }
+
+            .ptn-table td,
+            .ptn-table tfoot th {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding: .75rem .75rem .75rem 39%;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+            }
+
+            .ptn-table td:last-child {
+                border-bottom: none;
+            }
+
+            .ptn-table td:before,
+            .ptn-table th:before {
+                content: attr(data-cell);
+                position: absolute;
+                left: .75rem;
+                width: 33%;
+                padding-right: .75rem;
+                font-weight: 600;
+                color: #2c3e50;
+                font-size: .8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            td.ptn-findata {
+                text-align: left;
+            }
+
+            .ptn-table tfoot {
+                background-color: white;
+                border-top: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Basic responsive table with financial data</h1>
+
+        <!-- START OF TABLE CODE-->
+
+        <!-- In the event of no results, show the empty state; do NOT draw the empty table/table head and have the null result presented *in* the table. The exceptions to this rule are: 1)  if there is a load delay; 2) if the user has filters applied before seeing the resulting table -->
+
+        <!--
+        <p class="ptn-empty-table">
+            There are no active applications to display. (Write a clear, short, user-friendly message.)
+        </p>-->
+        <div class="ptn-table-outline">
+            <table class="ptn-table">
+                <caption class="sr-only">Project membership list </caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Project Name</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Project Start Date</th>
+                        <th scope="col">PI</th>
+                        <th scope="col" class="ptn-findata" id="grant-amount">Grant Amount</th>
+                        <th scope="col" class="ptn-findata" id="encumbrances">Encumbrances</th>
+                        <th scope="col" class="ptn-findata" id="funds-available">Funds Available</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-cell="Project Name">Virtual Game Worlds Shed Light On Real
+                            World Epidemics</td>
+                        <td data-cell="Unit">1-245891</td>
+                        <td data-cell="Project Start Date">07/15/2025</td>
+
+                        <td data-cell="PI">Chen, Michael </td>
+                        <td data-cell="Grant Amount" class="ptn-findata">44,800.00</td>
+                        <td data-cell="Encumbrances" class="ptn-findata">10,000.00</td>
+                        <td data-cell="Funds Available" class="ptn-findata">34,800.00</td>
+                    </tr>
+                    <tr>
+                        <td data-cell="Project Name">Neural Network Optimization for Climate Modeling</td>
+                        <td data-cell="Unit">2-187634</td>
+                        <td data-cell="Project Start Date">09/01/2025</td>
+
+                        <td data-cell="PI">Rodriguez, Sarah </td>
+                        <td data-cell="Grant Amount" class="ptn-findata">125,000.00</td>
+                        <td data-cell="Encumbrances" class="ptn-findata">45,200.00</td>
+                        <td data-cell="Funds Available" class="ptn-findata positive">79,800.00</td>
+                    </tr>
+                    <tr>
+                        <td data-cell="Project Name">Sustainable Materials for Battery Technology</td>
+                        <td data-cell="Unit">3-298472</td>
+                        <td data-cell="Project Start Date">03/12/2025</td>
+
+                        <td data-cell="PI">Wilson, James</td>
+                        <td data-cell="Grant Amount" class="ptn-findata">87,500.00</td>
+                        <td data-cell="Encumbrances" class="ptn-findata">92,100.00</td>
+                        <td data-cell="Funds Available" class="ptn-findata ptn-negative">-4,600.00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-cell="Project Name">Quantum Computing Applications in Cryptography</td>
+                        <td data-cell="Unit">1-456789</td>
+                        <td data-cell="Project Start Date">01/15/2025</td>
+
+                        <td data-cell="PI">Zhang, Emily </td>
+                        <td data-cell="Grant Amount" class="ptn-findata">230,000.00</td>
+                        <td data-cell="Encumbrances" class="ptn-findata">67,400.00</td>
+                        <td data-cell="Funds Available" class="ptn-findata positive">162,600.00</td>
+                    </tr>
+                    <tr>
+                        <td data-cell="Project Name">Biodiversity Conservation in Urban Environments</td>
+                        <td data-cell="Unit">4-112358</td>
+                        <td data-cell="Project Start Date">06/01/2025</td>
+
+                        <td data-cell="PI">Thompson, Ella</td>
+                        <td data-cell="Grant Amount" class="ptn-findata">65,750.00</td>
+                        <td data-cell="Encumbrances" class="ptn-findata">28,900.00</td>
+                        <td data-cell="Funds Available" class="ptn-findata positive">36,850.00</td>
+                    </tr>
+                    <tr>
+                        <td data-cell="Project Name">Advanced Gene Therapy for Rare Diseases</td>
+                        <td data-cell="Unit">5-987654</td>
+                        <td data-cell="Project Start Date">04/20/2025</td>
+
+                        <td data-cell="PI">Gonzalez, Maria </td>
+                        <td data-cell="Grant Amount" class="ptn-findata">180,000.00</td>
+                        <td data-cell="Encumbrances" class="ptn-findata">55,300.00</td>
+                        <td data-cell="Funds Available" class="ptn-findata positive">124,700.00</td>
+                    </tr>
+
+                </tbody>
+
+                <tfoot>
+                    <tr>
+                        <th scope="row" colspan="4">Totals</th>
+                        <th headers="grant-amount" class="ptn-findata" data-cell="Grant Amount Total">$733,050.00</th>
+                        <th headers="encumbrances" class="ptn-findata" data-cell="Encumbrances Total">$299,900.00</th>
+                        <th headers="funds-available" class="ptn-findata" data-cell="Funds Available Total">$433,150.00
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <!-- END OF TABLE CODE-->
+
+
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li>Slight cell border &amp; tighter cells than standard example.</li>
+                <li>TFoot part is optional. </li>
+                <li>Table rows stack on small screens, up to 768px.</li>
+                <li>Includes class to add to cells that contain negative amounts; can also highlight cell background.
+                </li>
+                <li>Required caption available to screen readers but accessibly hidden from visual display.</li>
+                <li>Any added link/focus behaviour will inherit from existing stylesheet; make sure those :link, :hover,
+                    and :focus
+                    states are accessible. </li>
+                <li>Table will expand to full available width; add constraining container or max-width to control width
+                    if needed.
+                </li>
+            </ul>
+        </section>
+
+    </div>
+</body>
+
+</html>

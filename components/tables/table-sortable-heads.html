@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCAG-Compliant Sortable Table</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: #fff;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        /* IMPORTANT: copy styles from this point forward only*/
+
+        .sr-only {
+            /* this is a utility class that makes content hidden visually but available for screen readers*/
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+        }
+
+        .ptn-table-outline {
+            /*uncomment if you want a border & rounded corners around the table
+            border: 1px solid var(--border-light);*/
+            margin: 1.25rem 0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .ptn-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--dark-text)
+        }
+
+        .ptn-table th {
+            color: var(--dark-text);
+            padding: 1rem .75rem .75rem .75rem;
+            text-align: left;
+            font-weight: 400;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+        }
+
+        .ptn-sort-table th {
+            font-weight: 600;
+            padding: 0;
+            border: 1px solid var(--border-light);
+        }
+
+        .ptn-table td {
+            padding: .75rem;
+            border: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+
+        .ptn-table tbody tr:nth-child(odd) {
+            background-color: #f6f8fa;
+        }
+
+        .ptn-table tbody tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .ptn-table tbody tr:hover {
+            background-color: #f0f2f3;
+        }
+
+        /* adjust link color/style here */
+        .ptn-table .name-link {
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .ptn-table .name-link:hover,
+        .ptn-table .name-link:focus {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        .ptn-table .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ptn-table .status-th {
+            padding-left: 24px;
+        }
+
+        .ptn-table .status.positive {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .ptn-table .status.in-progress {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .ptn-table .status.pending {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #99d6ff;
+        }
+
+        .ptn-table .status.negative {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .ptn-empty-table {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--dark-text);
+            font-weight: 500;
+            border-radius: 8px;
+            background-color: #edf0f4;
+            padding: 1rem
+        }
+
+        /* Sortable column styling */
+        .ptn-sortable {
+            cursor: pointer;
+            user-select: none;
+            border: none;
+            background: none;
+            padding: 0.75rem;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: .8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .ptn-sortable:hover {
+            background-color: #e3f2fd;
+        }
+
+        .ptn-sortable:focus {
+            outline: 2px solid #134b8b;
+            outline-offset: -2px;
+            background-color: #e3f2fd;
+
+        }
+
+        /* Sort indicators */
+        .ptn-sort-indicator {
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+            position: relative;
+            width: 12px;
+            height: 12px;
+        }
+
+        .ptn-sortable[aria-sort="ascending"] .ptn-sort-indicator::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 8px solid #2c3e50;
+            position: absolute;
+            top: 2px;
+        }
+
+        .ptn-sortable[aria-sort="descending"] .ptn-sort-indicator::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #2c3e50;
+            position: absolute;
+            top: 2px;
+        }
+
+        .ptn-sortable[aria-sort="none"] .ptn-sort-indicator::before,
+        .ptn-sortable[aria-sort="none"] .ptn-sort-indicator::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            left: 2px;
+        }
+
+        .ptn-sortable[aria-sort="none"] .ptn-sort-indicator::before {
+            border-bottom: 4px solid #818792;
+            top: 1px;
+        }
+
+        .ptn-sortable[aria-sort="none"] .ptn-sort-indicator::after {
+            border-top: 4px solid #818792;
+            bottom: 1px;
+        }
+
+        /* Mobile responsive design */
+        @media (max-width: 768px) {
+            .wide-only {
+                display: none;
+            }
+
+            .ptn-table table,
+            .ptn-table thead,
+            .ptn-table tbody,
+            .ptn-table th,
+            .ptn-table td,
+            .ptn-table tr {
+                display: block;
+            }
+
+            .ptn-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            .ptn-sort-table thead tr {
+                display: none;
+            }
+
+            .ptn-table tr {
+                border: 1px solid #ccc;
+                margin-bottom: .75rem;
+                padding: .75rem;
+                border-radius: 8px;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .ptn-table tbody tr:nth-child(odd) {
+                background-color: #fff;
+            }
+
+            .ptn-table tr:hover {
+                background-color: white;
+            }
+
+            .ptn-table td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding: .75rem .75rem .75rem 39%;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+            }
+
+            .ptn-table td:last-child {
+                border-bottom: none;
+            }
+
+            .ptn-table td:before {
+                content: attr(data-cell);
+                position: absolute;
+                left: .75rem;
+                width: 33%;
+                padding-right: .75rem;
+                font-weight: 600;
+                color: #2c3e50;
+                font-size: .8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Responsive sortable table</h1>
+
+
+        <table class="ptn-table ptn-sort-table">
+            <caption class="sr-only">
+                Employee Directory <span class="wide-only">Use column headers to sort data</span>
+                <span id="sort-status" aria-live="polite" class="sr-only"></span>
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <button class="ptn-sortable" aria-sort="none" data-column="name" aria-describedby="name-desc">
+                            <span>Name</span>
+                            <span class="ptn-sort-indicator" aria-hidden="true"></span>
+                        </button>
+                        <span id="name-desc" class="sr-only">Click to sort by name</span>
+                    </th>
+                    <th scope="col">
+                        <button class="ptn-sortable" aria-sort="none" data-column="department"
+                            aria-describedby="dept-desc">
+                            <span>Department</span>
+                            <span class="ptn-sort-indicator" aria-hidden="true"></span>
+                        </button>
+                        <span id="dept-desc" class="sr-only">Click to sort by department</span>
+                    </th>
+                    <th scope="col">
+                        <button class="ptn-sortable" aria-sort="none" data-column="hire-date"
+                            aria-describedby="date-desc">
+                            <span>Hire Date</span>
+                            <span class="ptn-sort-indicator" aria-hidden="true"></span>
+                        </button>
+                        <span id="date-desc" class="sr-only">Click to sort by hire date</span>
+                    </th>
+                    <th scope="col">
+                        <button class="ptn-sortable" aria-sort="none" data-column="salary"
+                            aria-describedby="salary-desc">
+                            <span>Salary</span>
+                            <span class="ptn-sort-indicator" aria-hidden="true"></span>
+                        </button>
+                        <span id="salary-desc" class="sr-only">Click to sort by salary</span>
+                    </th>
+                    <th scope="col" class="status-th">Status</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr>
+                    <td>Johnson, Alice</td>
+                    <td>Engineering</td>
+                    <td>2021-03-15</td>
+                    <td>$85,000</td>
+                    <td><span class="status positive">Active</span></td>
+                </tr>
+                <tr>
+                    <td>Chen, Bob</td>
+                    <td>Marketing</td>
+                    <td>2020-07-22</td>
+                    <td>$72,000</td>
+                    <td><span class="status positive">Active</span></td>
+                </tr>
+                <tr>
+                    <td>Davis, Carol</td>
+                    <td>Engineering</td>
+                    <td>2019-01-10</td>
+                    <td>$92,000</td>
+                    <td><span class="status negative">Inactive</span></td>
+                </tr>
+                <tr>
+                    <td>Wilson, David</td>
+                    <td>Sales</td>
+                    <td>2022-05-03</td>
+                    <td>$68,000</td>
+                    <td><span class="status pending">Pending</span></td>
+                </tr>
+                <tr>
+                    <td>Martinez, Eva</td>
+                    <td>HR</td>
+                    <td>2018-11-12</td>
+                    <td>$78,000</td>
+                    <td><span class="status positive">Active</span></td>
+                </tr>
+                <tr>
+                    <td>Thompson, Frank</td>
+                    <td>Engineering</td>
+                    <td>2023-02-20</td>
+                    <td>$95,000</td>
+                    <td><span class="status positive">Active</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li>Single-sort via drpdown is generally preferred, but this is provided in the event users are used to
+                    table header sorting or the use case leans in this direction (for example, the table needs to mimic
+                    a
+                    spreadsheet).</li>
+                <li>Table rows stack on small screens, up to 768px. Sorting feature is lost on small screens, however.
+                </li>
+                <li>Useful for basic text/data tables with no actions or a link to a detail page. (If the interaction is
+                    to a popup or modal, use a button instead of a link; there is a pattern available for that.)</li>
+                <li>Accessibility additions for sorting:
+
+                    <ul>
+                        <li>All sort controls reachable via Tab and activated with Enter/Space.</li>
+                        <li>Aria-sort indicates current sort state to screen readers</li>
+                        <li>Live regions: Sort changes announced to screen readers</li>
+                        <li>Arrows show sort direction.</li>
+                    </ul>
+                </li>
+                <li>Includes optional status pills for conditions or statuses:
+                    <ul>
+                        <li>Positive (green) = completed, on-track; positive state </li>
+                        <li>Negative (red) = warning, error, off-track; negative state/li>
+                        <li>Pending (blue) = pending; neutral condition</li>
+                        <li>In-progress (yelllow) = in progress; neutral or alert condition</li>
+                    </ul>
+                </li>
+                <li>Required caption available to screen readers but accessibly hidden from visual display.</li>
+                <li>(If links are added) Link/focus behaviour will inherit from main stylesheet; make sure those :link,
+                    :hover, and :focus
+                    states are accessible. </li>
+                <li>Table will expand to full available width; add constraining container or max-width if needed.
+                </li>
+                <li>Important: Carefully review javascript and adapt as necessary. </li>
+            </ul>
+        </section>
+    </div>
+    <script>
+        // Store original data for sorting
+        const tableData = [
+            { name: 'Johnson, Alice', department: 'Engineering', 'hire-date': '2021-03-15', salary: 85000, status: '<span class="status positive">Active</span>' },
+            { name: 'Chen, Bob', department: 'Marketing', 'hire-date': '2020-07-22', salary: 72000, status: '<span class="status positive">Active</span>' },
+            { name: 'Davis, Carol', department: 'Engineering', 'hire-date': '2019-01-10', salary: 92000, status: '<span class="status negative">Inactive</span>' },
+            { name: 'Wilson, David', department: 'Sales', 'hire-date': '2022-05-03', salary: 68000, status: '<span class="status pending">Pending</span>' },
+            { name: 'Martinez, Eva', department: 'HR', 'hire-date': '2018-11-12', salary: 78000, status: '<span class="status positive">Active</span>' },
+            { name: 'Thompson, Frank', department: 'Engineering', 'hire-date': '2023-02-20', salary: 95000, status: '<span class="status positive">Active</span>' }
+        ];
+
+        let currentSort = { column: null, direction: null };
+
+        // Event listeners to sortable buttons
+        document.querySelectorAll('.ptn-sortable').forEach(button => {
+            button.addEventListener('click', handleSort);
+            button.addEventListener('keydown', handleKeydown);
+        });
+
+        function handleKeydown(event) {
+            // Only trigger on Enter or Space
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleSort(event);
+            }
+        }
+
+        function handleSort(event) {
+            const button = event.currentTarget;
+            const column = button.dataset.column;
+
+            // Determine sort direction
+            let direction = 'ascending';
+            if (currentSort.column === column && currentSort.direction === 'ascending') {
+                direction = 'descending';
+            }
+
+            // Update ARIA attributes
+            document.querySelectorAll('.ptn-sortable').forEach(btn => {
+                btn.setAttribute('aria-sort', 'none');
+            });
+            button.setAttribute('aria-sort', direction);
+
+            // Sort the data
+            const sortedData = [...tableData].sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+
+                // Handle different data types
+                if (column === 'salary') {
+                    return direction === 'ascending' ? aVal - bVal : bVal - aVal;
+                } else if (column === 'hire-date') {
+                    aVal = new Date(aVal);
+                    bVal = new Date(bVal);
+                    return direction === 'ascending' ? aVal - bVal : bVal - aVal;
+                } else {
+                    // String comparison
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                    if (direction === 'ascending') {
+                        return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+                    } else {
+                        return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+                    }
+                }
+            });
+
+            // Update the table
+            renderTable(sortedData);
+
+            // Update current sort state
+            currentSort = { column, direction };
+
+            // Announce to screen readers
+            const statusElement = document.getElementById('sort-status');
+            const columnName = button.querySelector('span').textContent;
+            statusElement.textContent = `Table sorted by ${columnName} in ${direction} order`;
+
+            // Keep focus on the button
+            button.focus();
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    <td>${row.name}</td>
+                    <td>${row.department}</td>
+                    <td>${row['hire-date']}</td>
+                    <td>$${row.salary.toLocaleString()}</td>
+                    <td>${row.status}</td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>
