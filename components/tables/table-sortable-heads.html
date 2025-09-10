@@ -92,6 +92,42 @@
             --border-light: #e9ecef;
         }
 
+        /* Mobile sort controls */
+        .mobile-sort-controls {
+            display: none;
+            margin-bottom: 1rem;
+        }
+
+        .mobile-sort-controls label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 0.9rem;
+        }
+
+        .mobile-sort-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: white;
+            color: var(--dark-text);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232c3e50' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+        }
+
+        .mobile-sort-select:focus {
+            outline: 2px solid #134b8b;
+            outline-offset: -2px;
+            border-color: #134b8b;
+        }
+
         .ptn-table-outline {
             /*uncomment if you want a border & rounded corners around the table
             border: 1px solid var(--border-light);*/
@@ -288,6 +324,10 @@
                 display: none;
             }
 
+            .mobile-sort-controls {
+                display: block;
+            }
+
             .ptn-table table,
             .ptn-table thead,
             .ptn-table tbody,
@@ -358,6 +398,22 @@
     <div class="container">
         <h1>Responsive sortable table</h1>
 
+        <!-- Mobile sort controls -->
+        <div class="mobile-sort-controls">
+            <label for="mobile-sort">Sort by:</label>
+            <select id="mobile-sort" class="mobile-sort-select" aria-describedby="mobile-sort-desc">
+                <option value="">Choose a column to sort</option>
+                <option value="name-asc">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="department-asc">Department (A-Z)</option>
+                <option value="department-desc">Department (Z-A)</option>
+                <option value="hire-date-asc">Hire Date (Oldest first)</option>
+                <option value="hire-date-desc">Hire Date (Newest first)</option>
+                <option value="salary-asc">Salary (Low to High)</option>
+                <option value="salary-desc">Salary (High to Low)</option>
+            </select>
+            <span id="mobile-sort-desc" class="sr-only">Select an option to sort the table data</span>
+        </div>
 
         <table class="ptn-table ptn-sort-table">
             <caption class="sr-only">
@@ -402,46 +458,46 @@
             </thead>
             <tbody id="table-body">
                 <tr>
-                    <td>Johnson, Alice</td>
-                    <td>Engineering</td>
-                    <td>2021-03-15</td>
-                    <td>$85,000</td>
-                    <td><span class="status positive">Active</span></td>
+                    <td data-cell="Name: ">Johnson, Alice</td>
+                    <td data-cell="Department: ">Engineering</td>
+                    <td data-cell="Hire Date: ">2021-03-15</td>
+                    <td data-cell="Salary: ">$85,000</td>
+                    <td data-cell="Status: "><span class="status positive">Active</span></td>
                 </tr>
                 <tr>
-                    <td>Chen, Bob</td>
-                    <td>Marketing</td>
-                    <td>2020-07-22</td>
-                    <td>$72,000</td>
-                    <td><span class="status positive">Active</span></td>
+                    <td data-cell="Name: ">Chen, Bob</td>
+                    <td data-cell="Department: ">Marketing</td>
+                    <td data-cell="Hire Date: ">2020-07-22</td>
+                    <td data-cell="Salary: ">$72,000</td>
+                    <td data-cell="Status: "><span class="status positive">Active</span></td>
                 </tr>
                 <tr>
-                    <td>Davis, Carol</td>
-                    <td>Engineering</td>
-                    <td>2019-01-10</td>
-                    <td>$92,000</td>
-                    <td><span class="status negative">Inactive</span></td>
+                    <td data-cell="Name: ">Davis, Carol</td>
+                    <td data-cell="Department: ">Engineering</td>
+                    <td data-cell="Hire Date: ">2019-01-10</td>
+                    <td data-cell="Salary: ">$92,000</td>
+                    <td data-cell="Status: "><span class="status negative">Inactive</span></td>
                 </tr>
                 <tr>
-                    <td>Wilson, David</td>
-                    <td>Sales</td>
-                    <td>2022-05-03</td>
-                    <td>$68,000</td>
-                    <td><span class="status pending">Pending</span></td>
+                    <td data-cell="Name: ">Wilson, David</td>
+                    <td data-cell="Department: ">Sales</td>
+                    <td data-cell="Hire Date: ">2022-05-03</td>
+                    <td data-cell="Salary: ">$68,000</td>
+                    <td data-cell="Status: "><span class="status pending">Pending</span></td>
                 </tr>
                 <tr>
-                    <td>Martinez, Eva</td>
-                    <td>HR</td>
-                    <td>2018-11-12</td>
-                    <td>$78,000</td>
-                    <td><span class="status positive">Active</span></td>
+                    <td data-cell="Name: ">Martinez, Eva</td>
+                    <td data-cell="Department: ">HR</td>
+                    <td data-cell="Hire Date: ">2018-11-12</td>
+                    <td data-cell="Salary: ">$78,000</td>
+                    <td data-cell="Status: "><span class="status positive">Active</span></td>
                 </tr>
                 <tr>
-                    <td>Thompson, Frank</td>
-                    <td>Engineering</td>
-                    <td>2023-02-20</td>
-                    <td>$95,000</td>
-                    <td><span class="status positive">Active</span></td>
+                    <td data-cell="Name: ">Thompson, Frank</td>
+                    <td data-cell="Department: ">Engineering</td>
+                    <td data-cell="Hire Date: ">2023-02-20</td>
+                    <td data-cell="Salary: ">$95,000</td>
+                    <td data-cell="Status: "><span class="status positive">Active</span></td>
                 </tr>
             </tbody>
         </table>
@@ -449,38 +505,36 @@
         <section class="usage-notes">
             <h2>Usage notes</h2>
             <ul>
-                <li>Single-sort via drpdown is generally preferred, but this is provided in the event users are used to
+                <li>Single-sort via dropdown is generally preferred, but this is provided in the event users are used to
                     table header sorting or the use case leans in this direction (for example, the table needs to mimic
-                    a
-                    spreadsheet).</li>
-                <li>Table rows stack on small screens, up to 768px. Sorting feature is lost on small screens, however.
-                </li>
+                    a spreadsheet).</li>
+                <li>Table rows stack on small screens, up to 768px. Sorting functionality is now available on
+                    mobile via the dropdown above the table.</li>
                 <li>Useful for basic text/data tables with no actions or a link to a detail page. (If the interaction is
                     to a popup or modal, use a button instead of a link; there is a pattern available for that.)</li>
                 <li>Accessibility additions for sorting:
-
                     <ul>
                         <li>All sort controls reachable via Tab and activated with Enter/Space.</li>
                         <li>Aria-sort indicates current sort state to screen readers</li>
                         <li>Live regions: Sort changes announced to screen readers</li>
                         <li>Arrows show sort direction.</li>
+                        <li>Mobile dropdown includes proper labeling and screen reader descriptions.
+                        </li>
                     </ul>
                 </li>
                 <li>Includes optional status pills for conditions or statuses:
                     <ul>
                         <li>Positive (green) = completed, on-track; positive state </li>
-                        <li>Negative (red) = warning, error, off-track; negative state/li>
+                        <li>Negative (red) = warning, error, off-track; negative state</li>
                         <li>Pending (blue) = pending; neutral condition</li>
-                        <li>In-progress (yelllow) = in progress; neutral or alert condition</li>
+                        <li>In-progress (yellow) = in progress; neutral or alert condition</li>
                     </ul>
                 </li>
                 <li>Required caption available to screen readers but accessibly hidden from visual display.</li>
                 <li>(If links are added) Link/focus behaviour will inherit from main stylesheet; make sure those :link,
-                    :hover, and :focus
-                    states are accessible. </li>
-                <li>Table will expand to full available width; add constraining container or max-width if needed.
-                </li>
-                <li>Important: Carefully review javascript and adapt as necessary. </li>
+                    :hover, and :focus states are accessible.</li>
+                <li>Table will expand to full available width; add constraining container or max-width if needed.</li>
+                <li>Important: Carefully review javascript and adapt as necessary.</li>
             </ul>
         </section>
     </div>
@@ -497,11 +551,14 @@
 
         let currentSort = { column: null, direction: null };
 
-        // Event listeners to sortable buttons
+        // Event listeners for desktop sortable buttons
         document.querySelectorAll('.ptn-sortable').forEach(button => {
             button.addEventListener('click', handleSort);
             button.addEventListener('keydown', handleKeydown);
         });
+
+        // Event listener for mobile sort dropdown
+        document.getElementById('mobile-sort').addEventListener('change', handleMobileSort);
 
         function handleKeydown(event) {
             // Only trigger on Enter or Space
@@ -521,11 +578,40 @@
                 direction = 'descending';
             }
 
-            // Update ARIA attributes
+            // Apply sort and update UI
+            applySortAndUpdateUI(column, direction, button);
+        }
+
+        function handleMobileSort(event) {
+            const value = event.target.value;
+
+            if (!value) {
+                // Reset to original order
+                renderTable(tableData);
+                resetSortState();
+                return;
+            }
+
+            const [column, direction] = value.split('-');
+
+            // Apply sort and update UI
+            applySortAndUpdateUI(column, direction === 'asc' ? 'ascending' : 'descending');
+        }
+
+        function applySortAndUpdateUI(column, direction, sourceButton = null) {
+            // Update ARIA attributes on desktop buttons
             document.querySelectorAll('.ptn-sortable').forEach(btn => {
-                btn.setAttribute('aria-sort', 'none');
+                if (btn.dataset.column === column) {
+                    btn.setAttribute('aria-sort', direction);
+                } else {
+                    btn.setAttribute('aria-sort', 'none');
+                }
             });
-            button.setAttribute('aria-sort', direction);
+
+            // Update mobile dropdown to match
+            const mobileSelect = document.getElementById('mobile-sort');
+            const dropdownValue = `${column}-${direction === 'ascending' ? 'asc' : 'desc'}`;
+            mobileSelect.value = dropdownValue;
 
             // Sort the data
             const sortedData = [...tableData].sort((a, b) => {
@@ -559,22 +645,51 @@
 
             // Announce to screen readers
             const statusElement = document.getElementById('sort-status');
-            const columnName = button.querySelector('span').textContent;
+            const columnName = getColumnDisplayName(column);
             statusElement.textContent = `Table sorted by ${columnName} in ${direction} order`;
 
-            // Keep focus on the button
-            button.focus();
+            // Keep focus on the source button if triggered from desktop
+            if (sourceButton) {
+                sourceButton.focus();
+            }
+        }
+
+        function resetSortState() {
+            // Reset all ARIA attributes
+            document.querySelectorAll('.ptn-sortable').forEach(btn => {
+                btn.setAttribute('aria-sort', 'none');
+            });
+
+            // Reset mobile dropdown
+            document.getElementById('mobile-sort').value = '';
+
+            // Reset current sort state
+            currentSort = { column: null, direction: null };
+
+            // Announce reset to screen readers
+            const statusElement = document.getElementById('sort-status');
+            statusElement.textContent = 'Table restored to original order';
+        }
+
+        function getColumnDisplayName(column) {
+            const columnNames = {
+                'name': 'Name',
+                'department': 'Department',
+                'hire-date': 'Hire Date',
+                'salary': 'Salary'
+            };
+            return columnNames[column] || column;
         }
 
         function renderTable(data) {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = data.map(row => `
                 <tr>
-                    <td>${row.name}</td>
-                    <td>${row.department}</td>
-                    <td>${row['hire-date']}</td>
-                    <td>$${row.salary.toLocaleString()}</td>
-                    <td>${row.status}</td>
+                    <td data-cell="Name: ">${row.name}</td>
+                    <td data-cell="Department: ">${row.department}</td>
+                    <td data-cell="Hire Date: ">${row['hire-date']}</td>
+                    <td data-cell="Salary: ">$${row.salary.toLocaleString()}</td>
+                    <td data-cell="Status: ">${row.status}</td>
                 </tr>
             `).join('');
         }
