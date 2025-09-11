@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WCAG-Compliant Sortable Table</title>
+    <title>WCAG-Compliant Sortable Table - Auto-Extract Data</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -396,21 +396,13 @@
 
 <body>
     <div class="container">
-        <h1>Responsive sortable table</h1>
+        <h1>Auto-Extracting Sortable Table</h1>
 
-        <!-- Mobile sort controls -->
+        <!-- Mobile sort controls - will be populated automatically -->
         <div class="mobile-sort-controls">
             <label for="mobile-sort">Sort by:</label>
             <select id="mobile-sort" class="mobile-sort-select" aria-describedby="mobile-sort-desc">
                 <option value="">Choose a column to sort</option>
-                <option value="name-asc">Name (A-Z)</option>
-                <option value="name-desc">Name (Z-A)</option>
-                <option value="department-asc">Department (A-Z)</option>
-                <option value="department-desc">Department (Z-A)</option>
-                <option value="hire-date-asc">Hire Date (Oldest first)</option>
-                <option value="hire-date-desc">Hire Date (Newest first)</option>
-                <option value="salary-asc">Salary (Low to High)</option>
-                <option value="salary-desc">Salary (High to Low)</option>
             </select>
             <span id="mobile-sort-desc" class="sr-only">Select an option to sort the table data</span>
         </div>
@@ -423,14 +415,15 @@
             <thead>
                 <tr>
                     <th scope="col">
-                        <button class="ptn-sortable" aria-sort="none" data-column="name" aria-describedby="name-desc">
+                        <button class="ptn-sortable" aria-sort="none" data-column="0" data-type="text"
+                            aria-describedby="name-desc">
                             <span>Name</span>
                             <span class="ptn-sort-indicator" aria-hidden="true"></span>
                         </button>
                         <span id="name-desc" class="sr-only">Click to sort by name</span>
                     </th>
                     <th scope="col">
-                        <button class="ptn-sortable" aria-sort="none" data-column="department"
+                        <button class="ptn-sortable" aria-sort="none" data-column="1" data-type="text"
                             aria-describedby="dept-desc">
                             <span>Department</span>
                             <span class="ptn-sort-indicator" aria-hidden="true"></span>
@@ -438,7 +431,7 @@
                         <span id="dept-desc" class="sr-only">Click to sort by department</span>
                     </th>
                     <th scope="col">
-                        <button class="ptn-sortable" aria-sort="none" data-column="hire-date"
+                        <button class="ptn-sortable" aria-sort="none" data-column="2" data-type="date"
                             aria-describedby="date-desc">
                             <span>Hire Date</span>
                             <span class="ptn-sort-indicator" aria-hidden="true"></span>
@@ -446,7 +439,7 @@
                         <span id="date-desc" class="sr-only">Click to sort by hire date</span>
                     </th>
                     <th scope="col">
-                        <button class="ptn-sortable" aria-sort="none" data-column="salary"
+                        <button class="ptn-sortable" aria-sort="none" data-column="3" data-type="currency"
                             aria-describedby="salary-desc">
                             <span>Salary</span>
                             <span class="ptn-sort-indicator" aria-hidden="true"></span>
@@ -503,11 +496,14 @@
         </table>
 
         <section class="usage-notes">
-            <h2>Usage notes</h2>
+            <h2>Improved Implementation Notes</h2>
             <ul>
-                <li>Single-sort via dropdown is generally preferred, but this is provided in the event users are used to
+                <li><strong>Before you choose this:</strong> Adding a sort control (via dropdown above the table) is
+                    generally preferred
+                    over this pattern! This is provided in the event users are used to
                     table header sorting or the use case leans in this direction (for example, the table needs to mimic
-                    a spreadsheet).</li>
+                    a spreadsheet). See if the <a href="table-extra-features-example.html">basic sort control</a> fits
+                    your needs, as it's easier for both users and developers. </li>
                 <li>Table rows stack on small screens, up to 768px. Sorting functionality is now available on
                     mobile via the dropdown above the table.</li>
                 <li>Useful for basic text/data tables with no actions or a link to a detail page. (If the interaction is
@@ -535,33 +531,102 @@
                     :hover, and :focus states are accessible.</li>
                 <li>Table will expand to full available width; add constraining container or max-width if needed.</li>
                 <li>Important: Carefully review javascript and adapt as necessary.</li>
+                <li>JavaScript automatically extracts data from the HTML table on
+                    page load</li>
+                <li><strong>How it works:</strong>
+                    <ul>
+                        <li>Add <code>data-type="text|date|currency|number"</code> to sortable header buttons to specify
+                            data type</li>
+                        <li>Use <code>data-column="0"</code> (column index) instead of column names</li>
+                        <li>JavaScript reads existing table rows and builds the data structure automatically</li>
+                        <li>Mobile dropdown options are generated based on sortable columns</li>
+                    </ul>
+                </li>
+                <li><strong>Data Types Supported:</strong>
+                    <ul>
+                        <li><code>text</code> - String comparison (case-insensitive)</li>
+                        <li><code>date</code> - Converts to Date objects for proper sorting</li>
+                        <li><code>currency</code> - Removes $ and commas, sorts as numbers</li>
+                        <li><code>number</code> - Parses as numeric values</li>
+                    </ul>
+                </li>
+                <li><strong>To adapt this table:</strong>
+                    <ul>
+                        <li>Modify the HTML structure as needed</li>
+                        <li>Update the <code>data-type</code> attributes on header buttons</li>
+                        <li>Adjust column indices in <code>data-column</code> attributes</li>
+                    </ul>
+                </li>
+
             </ul>
         </section>
     </div>
     <script>
-        // Store original data for sorting
-        const tableData = [
-            { name: 'Johnson, Alice', department: 'Engineering', 'hire-date': '2021-03-15', salary: 85000, status: '<span class="status positive">Active</span>' },
-            { name: 'Chen, Bob', department: 'Marketing', 'hire-date': '2020-07-22', salary: 72000, status: '<span class="status positive">Active</span>' },
-            { name: 'Davis, Carol', department: 'Engineering', 'hire-date': '2019-01-10', salary: 92000, status: '<span class="status negative">Inactive</span>' },
-            { name: 'Wilson, David', department: 'Sales', 'hire-date': '2022-05-03', salary: 68000, status: '<span class="status pending">Pending</span>' },
-            { name: 'Martinez, Eva', department: 'HR', 'hire-date': '2018-11-12', salary: 78000, status: '<span class="status positive">Active</span>' },
-            { name: 'Thompson, Frank', department: 'Engineering', 'hire-date': '2023-02-20', salary: 95000, status: '<span class="status positive">Active</span>' }
-        ];
-
+        let tableData = [];
         let currentSort = { column: null, direction: null };
 
-        // Event listeners for desktop sortable buttons
-        document.querySelectorAll('.ptn-sortable').forEach(button => {
-            button.addEventListener('click', handleSort);
-            button.addEventListener('keydown', handleKeydown);
+        // Initialize the table functionality when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            extractTableData();
+            setupEventListeners();
+            populateMobileDropdown();
         });
 
-        // Event listener for mobile sort dropdown
-        document.getElementById('mobile-sort').addEventListener('change', handleMobileSort);
+        function extractTableData() {
+            const tbody = document.getElementById('table-body');
+            const rows = tbody.querySelectorAll('tr');
+
+            tableData = Array.from(rows).map(row => {
+                const cells = row.querySelectorAll('td');
+                return Array.from(cells).map(cell => ({
+                    text: cell.textContent.trim(),
+                    html: cell.innerHTML,
+                    rawValue: cell.textContent.trim()
+                }));
+            });
+
+            console.log('Extracted table data:', tableData);
+        }
+
+        function setupEventListeners() {
+            // Event listeners for desktop sortable buttons
+            document.querySelectorAll('.ptn-sortable').forEach(button => {
+                button.addEventListener('click', handleSort);
+                button.addEventListener('keydown', handleKeydown);
+            });
+
+            // Event listener for mobile sort dropdown
+            document.getElementById('mobile-sort').addEventListener('change', handleMobileSort);
+        }
+
+        function populateMobileDropdown() {
+            const select = document.getElementById('mobile-sort');
+            const sortableButtons = document.querySelectorAll('.ptn-sortable');
+
+            // Clear existing options except the first one
+            while (select.children.length > 1) {
+                select.removeChild(select.lastChild);
+            }
+
+            sortableButtons.forEach(button => {
+                const columnIndex = parseInt(button.dataset.column);
+                const columnName = button.querySelector('span').textContent;
+
+                // Add ascending option
+                const ascOption = document.createElement('option');
+                ascOption.value = `${columnIndex}-asc`;
+                ascOption.textContent = `${columnName} (A-Z)`;
+                select.appendChild(ascOption);
+
+                // Add descending option
+                const descOption = document.createElement('option');
+                descOption.value = `${columnIndex}-desc`;
+                descOption.textContent = `${columnName} (Z-A)`;
+                select.appendChild(descOption);
+            });
+        }
 
         function handleKeydown(event) {
-            // Only trigger on Enter or Space
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 handleSort(event);
@@ -570,16 +635,17 @@
 
         function handleSort(event) {
             const button = event.currentTarget;
-            const column = button.dataset.column;
+            const columnIndex = parseInt(button.dataset.column);
+            const dataType = button.dataset.type;
 
             // Determine sort direction
             let direction = 'ascending';
-            if (currentSort.column === column && currentSort.direction === 'ascending') {
+            if (currentSort.column === columnIndex && currentSort.direction === 'ascending') {
                 direction = 'descending';
             }
 
             // Apply sort and update UI
-            applySortAndUpdateUI(column, direction, button);
+            applySortAndUpdateUI(columnIndex, direction, dataType, button);
         }
 
         function handleMobileSort(event) {
@@ -592,16 +658,18 @@
                 return;
             }
 
-            const [column, direction] = value.split('-');
+            const [columnIndex, direction] = value.split('-');
+            const button = document.querySelector(`[data-column="${columnIndex}"]`);
+            const dataType = button ? button.dataset.type : 'text';
 
             // Apply sort and update UI
-            applySortAndUpdateUI(column, direction === 'asc' ? 'ascending' : 'descending');
+            applySortAndUpdateUI(parseInt(columnIndex), direction === 'asc' ? 'ascending' : 'descending', dataType);
         }
 
-        function applySortAndUpdateUI(column, direction, sourceButton = null) {
+        function applySortAndUpdateUI(columnIndex, direction, dataType, sourceButton = null) {
             // Update ARIA attributes on desktop buttons
             document.querySelectorAll('.ptn-sortable').forEach(btn => {
-                if (btn.dataset.column === column) {
+                if (parseInt(btn.dataset.column) === columnIndex) {
                     btn.setAttribute('aria-sort', direction);
                 } else {
                     btn.setAttribute('aria-sort', 'none');
@@ -610,47 +678,63 @@
 
             // Update mobile dropdown to match
             const mobileSelect = document.getElementById('mobile-sort');
-            const dropdownValue = `${column}-${direction === 'ascending' ? 'asc' : 'desc'}`;
+            const dropdownValue = `${columnIndex}-${direction === 'ascending' ? 'asc' : 'desc'}`;
             mobileSelect.value = dropdownValue;
 
             // Sort the data
             const sortedData = [...tableData].sort((a, b) => {
-                let aVal = a[column];
-                let bVal = b[column];
+                const aVal = a[columnIndex];
+                const bVal = b[columnIndex];
 
-                // Handle different data types
-                if (column === 'salary') {
-                    return direction === 'ascending' ? aVal - bVal : bVal - aVal;
-                } else if (column === 'hire-date') {
-                    aVal = new Date(aVal);
-                    bVal = new Date(bVal);
-                    return direction === 'ascending' ? aVal - bVal : bVal - aVal;
-                } else {
-                    // String comparison
-                    aVal = aVal.toLowerCase();
-                    bVal = bVal.toLowerCase();
-                    if (direction === 'ascending') {
-                        return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-                    } else {
-                        return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
-                    }
-                }
+                return compareValues(aVal.rawValue, bVal.rawValue, dataType, direction);
             });
 
             // Update the table
             renderTable(sortedData);
 
             // Update current sort state
-            currentSort = { column, direction };
+            currentSort = { column: columnIndex, direction };
 
             // Announce to screen readers
             const statusElement = document.getElementById('sort-status');
-            const columnName = getColumnDisplayName(column);
+            const columnName = getColumnDisplayName(columnIndex);
             statusElement.textContent = `Table sorted by ${columnName} in ${direction} order`;
 
             // Keep focus on the source button if triggered from desktop
             if (sourceButton) {
                 sourceButton.focus();
+            }
+        }
+
+        function compareValues(aVal, bVal, dataType, direction) {
+            let a, b;
+
+            switch (dataType) {
+                case 'currency':
+                    // Remove $ and commas, then parse as number
+                    a = parseFloat(aVal.replace(/[$,]/g, '')) || 0;
+                    b = parseFloat(bVal.replace(/[$,]/g, '')) || 0;
+                    return direction === 'ascending' ? a - b : b - a;
+
+                case 'number':
+                    a = parseFloat(aVal) || 0;
+                    b = parseFloat(bVal) || 0;
+                    return direction === 'ascending' ? a - b : b - a;
+
+                case 'date':
+                    a = new Date(aVal);
+                    b = new Date(bVal);
+                    return direction === 'ascending' ? a - b : b - a;
+
+                case 'text':
+                default:
+                    a = aVal.toLowerCase();
+                    b = bVal.toLowerCase();
+                    if (direction === 'ascending') {
+                        return a < b ? -1 : a > b ? 1 : 0;
+                    } else {
+                        return a > b ? -1 : a < b ? 1 : 0;
+                    }
             }
         }
 
@@ -671,25 +755,20 @@
             statusElement.textContent = 'Table restored to original order';
         }
 
-        function getColumnDisplayName(column) {
-            const columnNames = {
-                'name': 'Name',
-                'department': 'Department',
-                'hire-date': 'Hire Date',
-                'salary': 'Salary'
-            };
-            return columnNames[column] || column;
+        function getColumnDisplayName(columnIndex) {
+            const button = document.querySelector(`[data-column="${columnIndex}"]`);
+            return button ? button.querySelector('span').textContent : `Column ${columnIndex + 1}`;
         }
 
         function renderTable(data) {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = data.map(row => `
                 <tr>
-                    <td data-cell="Name: ">${row.name}</td>
-                    <td data-cell="Department: ">${row.department}</td>
-                    <td data-cell="Hire Date: ">${row['hire-date']}</td>
-                    <td data-cell="Salary: ">$${row.salary.toLocaleString()}</td>
-                    <td data-cell="Status: ">${row.status}</td>
+                    ${row.map((cell, index) => {
+                const originalCell = tbody.children[0]?.children[index];
+                const dataCell = originalCell ? originalCell.getAttribute('data-cell') : '';
+                return `<td data-cell="${dataCell}">${cell.html}</td>`;
+            }).join('')}
                 </tr>
             `).join('');
         }
