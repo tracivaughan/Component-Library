@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic Responsive Table - Example 2</title>
+    <title>Basic Fixed Table </title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -21,7 +21,6 @@
         }
 
         h1 {
-
             color: #2c3e50;
             margin: 0;
             padding: 1.25rem 0;
@@ -72,8 +71,6 @@
             border-radius: 2px;
         }
 
-
-
         /* IMPORTANT: copy styles from this point forward only*/
 
         .sr-only {
@@ -94,8 +91,11 @@
             --border: #9ca3af;
             --border-light: #e9ecef;
             --dark-bg: #505a64;
+            --fixed-col-width: 210px;
+            /* desktop/tablet width */
+            --fade-speed: 0.3s;
+            /* fade duration */
         }
-
 
         .ptn-table-wrapper {
             position: relative;
@@ -137,17 +137,18 @@
             bottom: 0;
             width: 12px;
             pointer-events: none;
-            z-index: 2;
             opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 10;
+            transition: opacity var(--fade-speed) ease;
+            z-index: 2;
         }
 
         .ptn-scroll-indicator.left {
-            left: 214px;
-            /* Positioned after the fixed column */
+            left: var(--fixed-col-width);
             background: linear-gradient(to right, rgba(0, 0, 0, 0.1), transparent);
+            z-index: 10;
+            margin-left: 20px;
         }
+
 
         .ptn-scroll-indicator.right {
             right: 0;
@@ -182,6 +183,7 @@
             border-bottom: 2px solid #495057;
             white-space: nowrap;
             z-index: 1;
+            box-sizing: border-box;
         }
 
         .ptn-fixed-table td {
@@ -190,7 +192,6 @@
             border: 1px solid var(--border-light);
             white-space: nowrap;
             vertical-align: top;
-
         }
 
         .ptn-fixed-table tbody tr:hover {
@@ -201,9 +202,6 @@
             background-color: #f8f9fa;
         }
 
-
-
-        /* adjust  to match rest of site link style */
         .ptn-fixed-table .name-link {
             text-decoration: none;
             font-weight: 700;
@@ -214,8 +212,6 @@
             text-decoration: underline;
             color: #0056b3;
         }
-
-        /*end of link styles */
 
         .ptn-fixed-table .status {
             display: inline-block;
@@ -255,7 +251,6 @@
             border: 1px solid #f5c6cb;
         }
 
-
         .ptn-empty-table {
             font-size: 1.2rem;
             font-style: italic;
@@ -266,31 +261,22 @@
             padding: 1rem
         }
 
-
-
         /* Fixed first column */
         .col-title {
-            width: 210px;
+            width: var(--fixed-col-width);
             font-weight: 500;
             position: sticky;
             left: 0;
             background-color: white;
             border-right: 2px solid #ddd;
-            z-index: 2;
+            z-index: 3;
         }
 
-        /* Fixed first column header */
         th.col-title {
             background-color: #343a40;
-            z-index: 3;
-            /* Higher than regular sticky headers */
+            z-index: 4;
         }
 
-
-
-
-
-        /* Ensure even/odd row colors work with fixed column */
         tbody tr:nth-child(odd) .col-title {
             background-color: #f8f9fa;
         }
@@ -298,8 +284,6 @@
         tbody tr:hover .col-title {
             background-color: #d7dde1;
         }
-
-        /* Adjust/rename columns to suit needs */
 
         .col-year {
             min-width: 80px;
@@ -334,13 +318,11 @@
             min-width: 150px;
         }
 
-        /* Rating badges */
         .rating-badge {
             padding: 0.4rem 0.65rem;
             border-radius: 0.25rem;
             font-size: 0.8rem;
             font-weight: 500;
-
         }
 
         .rating-g {
@@ -365,6 +347,11 @@
 
         /* Mobile optimizations */
         @media (max-width: 768px) {
+            :root {
+                --fixed-col-width: 180px;
+                /* shrink on small screens */
+            }
+
             body {
                 padding: 1rem;
             }
@@ -375,20 +362,12 @@
                 font-size: 0.9rem;
             }
 
-            .col-title {
-                min-width: 180px;
-            }
-
-
             .col-director,
             .col-studio {
                 min-width: 130px;
             }
         }
 
-
-
-        /* Screen reader only */
         .sr-only {
             position: absolute;
             width: 1px;
@@ -401,13 +380,11 @@
             border: 0;
         }
 
-        /* Focus indicators for keyboard navigation */
         .ptn-table-container:focus-within {
             outline: 2px solid #0066cc;
             outline-offset: 2px;
         }
 
-        /* High contrast mode support */
         @media (prefers-contrast: high) {
             th {
                 background-color: #000;
@@ -427,20 +404,12 @@
 
         <h1>Basic fixed table with horizontal scrolling</h1>
 
-        <!-- START OF TABLE CODE-->
-
-        <!-- In the event of no results, show the empty state; do NOT draw the empty table/table head and have the null result presented *in* the table. The exceptions to this rule are: 1)  if there is a load delay; 2) if the user has filters applied before seeing the resulting table -->
-
-        <!--
-        <p class="ptn-empty-table">
-            There are no active applications to display. (Write a clear, short, user-friendly message.)
-        </p>-->
+        <!-- start of table code -->
         <div class="ptn-table-wrapper">
             <div class="ptn-scroll-indicator left" aria-hidden="true"></div>
             <div class="ptn-scroll-indicator right" aria-hidden="true"></div>
             <div class="ptn-table-container" tabindex="0" role="region"
                 aria-label="Movie database table, use arrow keys or scroll to view all columns">
-
 
                 <table class="ptn-fixed-table">
                     <caption class="sr-only">
@@ -563,43 +532,21 @@
                             <td class="col-studio">Walt Disney Pictures</td>
                         </tr>
                         <tr>
-                            <td class="col-title">Titanic</td>
-                            <td class="col-year">1997</td>
-                            <td class="col-director">James Cameron</td>
-                            <td class="col-genre">Romance/Drama</td>
-                            <td class="col-runtime">195 min</td>
-                            <td class="col-budget">$200M</td>
-                            <td class="col-boxoffice">$2.257B</td>
-                            <td class="col-rating"><span class="rating-badge rating-pg13">PG-13</span></td>
-                            <td class="col-studio">Paramount Pictures</td>
-                        </tr>
-                        <tr>
-                            <td class="col-title">Avatar</td>
-                            <td class="col-year">2009</td>
-                            <td class="col-director">James Cameron</td>
-                            <td class="col-genre">Sci-Fi/Action</td>
-                            <td class="col-runtime">162 min</td>
-                            <td class="col-budget">$237M</td>
-                            <td class="col-boxoffice">$2.923B</td>
-                            <td class="col-rating"><span class="rating-badge rating-pg13">PG-13</span></td>
+                            <td class="col-title">Fight Club</td>
+                            <td class="col-year">1999</td>
+                            <td class="col-director">David Fincher</td>
+                            <td class="col-genre">Drama/Thriller</td>
+                            <td class="col-runtime">139 min</td>
+                            <td class="col-budget">$63M</td>
+                            <td class="col-boxoffice">$101.2M</td>
+                            <td class="col-rating"><span class="rating-badge rating-r">R</span></td>
                             <td class="col-studio">20th Century Fox</td>
-                        </tr>
-                        <tr>
-                            <td class="col-title">Avengers: Endgame</td>
-                            <td class="col-year">2019</td>
-                            <td class="col-director">Russo Brothers</td>
-                            <td class="col-genre">Action/Adventure</td>
-                            <td class="col-runtime">181 min</td>
-                            <td class="col-budget">$356M</td>
-                            <td class="col-boxoffice">$2.798B</td>
-                            <td class="col-rating"><span class="rating-badge rating-pg13">PG-13</span></td>
-                            <td class="col-studio">Marvel Studios</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <!-- END OF TABLE CODE-->
+        <!-- end of table code -->
 
 
 
@@ -607,7 +554,10 @@
             <h2>Usage notes</h2>
             <ul>
                 <li>Designed to scroll horizontally if all columns cannot fit within viewport. </li>
-                <li>First column and column headers are fixed when scrolling. </li>
+                <li>Responsive tables are highly preferred over this pattern. Use this for situations where a tabular
+                    format is essential even on mobile or there is no way to limit the number of columns.</li>
+                <li>First column and column headers are fixed when scrolling. Widths will need to be adjusted in the
+                    CSS.</li>
                 <li>Scroll indicators and shadows reinforce that additional content is available.</li>
                 <li>Keyboard accessible: Table container is focusable; arrow keys arrow scrolling.</li>
                 <li>Touch scrolling optimized for mobile.</li>
@@ -624,85 +574,31 @@
     </div>
 
     <script>
-        // Scroll indicator functionality
         const tableContainer = document.querySelector('.ptn-table-container');
         const leftIndicator = document.querySelector('.ptn-scroll-indicator.left');
         const rightIndicator = document.querySelector('.ptn-scroll-indicator.right');
 
         function updateScrollIndicators() {
-            const { scrollLeft, scrollWidth, clientWidth } = tableContainer;
-            const maxScrollLeft = scrollWidth - clientWidth;
+            const scrollLeft = tableContainer.scrollLeft;
+            const maxScrollLeft = tableContainer.scrollWidth - tableContainer.clientWidth;
 
-            // Show left indicator if scrolled right
-            leftIndicator.classList.toggle('visible', scrollLeft > 10);
+            if (scrollLeft > 0) {
+                leftIndicator.classList.add('visible');
+            } else {
+                leftIndicator.classList.remove('visible');
+            }
 
-            // Show right indicator if can scroll further right
-            rightIndicator.classList.toggle('visible', scrollLeft < maxScrollLeft - 10);
-
-            // Add shadow to fixed column when scrolled
-            tableContainer.classList.toggle('scrolled', scrollLeft > 10);
+            if (scrollLeft < maxScrollLeft) {
+                rightIndicator.classList.add('visible');
+            } else {
+                rightIndicator.classList.remove('visible');
+            }
         }
 
-        // Update indicators on scroll
         tableContainer.addEventListener('scroll', updateScrollIndicators);
-
-        // Update indicators on window resize
         window.addEventListener('resize', updateScrollIndicators);
 
-        // Initialize indicators
         updateScrollIndicators();
-
-        // Enhanced keyboard navigation
-        tableContainer.addEventListener('keydown', function (event) {
-            const scrollAmount = 100;
-
-            switch (event.key) {
-                case 'ArrowLeft':
-                    event.preventDefault();
-                    tableContainer.scrollLeft -= scrollAmount;
-                    break;
-                case 'ArrowRight':
-                    event.preventDefault();
-                    tableContainer.scrollLeft += scrollAmount;
-                    break;
-                case 'Home':
-                    if (event.ctrlKey) {
-                        event.preventDefault();
-                        tableContainer.scrollLeft = 0;
-                    }
-                    break;
-                case 'End':
-                    if (event.ctrlKey) {
-                        event.preventDefault();
-                        tableContainer.scrollLeft = tableContainer.scrollWidth;
-                    }
-                    break;
-            }
-        });
-
-        // Announce scroll position to screen readers (throttled)
-        let announceTimeout;
-        tableContainer.addEventListener('scroll', function () {
-            clearTimeout(announceTimeout);
-            announceTimeout = setTimeout(() => {
-                const { scrollLeft, scrollWidth, clientWidth } = tableContainer;
-                const percentage = Math.round((scrollLeft / (scrollWidth - clientWidth)) * 100);
-
-                // Only announce significant changes
-                if (percentage % 25 === 0 || percentage === 0 || percentage === 100) {
-                    const announcement = `Scrolled ${percentage}% horizontally`;
-                    // Create temporary live region for announcement
-                    const liveRegion = document.createElement('div');
-                    liveRegion.setAttribute('aria-live', 'polite');
-                    liveRegion.setAttribute('aria-atomic', 'true');
-                    liveRegion.className = 'sr-only';
-                    liveRegion.textContent = announcement;
-                    document.body.appendChild(liveRegion);
-
-                    setTimeout(() => document.body.removeChild(liveRegion), 1000);
-                }
-            }, 500);
-        });
     </script>
 </body>
 
