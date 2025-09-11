@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCAG-Compliant Sortable Table - Auto-Extract Data</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: #fff;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        /* IMPORTANT: copy styles from this point forward only*/
+
+        .sr-only {
+            /* this is a utility class that makes content hidden visually but available for screen readers*/
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+        }
+
+        /* Mobile sort controls */
+        .mobile-sort-controls {
+            display: none;
+            margin-bottom: 1rem;
+        }
+
+        .mobile-sort-controls label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 0.9rem;
+        }
+
+        .mobile-sort-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: white;
+            color: var(--dark-text);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232c3e50' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+        }
+
+        .mobile-sort-select:focus {
+            outline: 2px solid #134b8b;
+            outline-offset: -2px;
+            border-color: #134b8b;
+        }
+
+        .ptn-table-outline {
+            /*uncomment if you want a border & rounded corners around the table
+            border: 1px solid var(--border-light);*/
+            margin: 1.25rem 0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .ptn-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--dark-text)
+        }
+
+        .ptn-table th {
+            color: var(--dark-text);
+            padding: 1rem .75rem .75rem .75rem;
+            text-align: left;
+            font-weight: 400;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+        }
+
+        .ptn-sort-table th {
+            font-weight: 600;
+            padding: 0;
+            border: 1px solid var(--border-light);
+        }
+
+        .ptn-table td {
+            padding: .75rem;
+            border: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+
+        .ptn-table tbody tr:nth-child(odd) {
+            background-color: #f6f8fa;
+        }
+
+        .ptn-table tbody tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .ptn-table tbody tr:hover {
+            background-color: #f0f2f3;
+        }
+
+        /* adjust link color/style here */
+        .ptn-table .name-link {
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .ptn-table .name-link:hover,
+        .ptn-table .name-link:focus {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        .ptn-table .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ptn-table .status-th {
+            padding-left: 24px;
+        }
+
+        .ptn-table .status.positive {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .ptn-table .status.in-progress {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .ptn-table .status.pending {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #99d6ff;
+        }
+
+        .ptn-table .status.negative {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .ptn-empty-table {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--dark-text);
+            font-weight: 500;
+            border-radius: 8px;
+            background-color: #edf0f4;
+            padding: 1rem
+        }
+
+        /* Sortable column styling */
+        .ptn-sortable {
+            cursor: pointer;
+            user-select: none;
+            border: none;
+            background: none;
+            padding: 0.75rem;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: .8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .ptn-sortable:hover {
+            background-color: #e3f2fd;
+        }
+
+        .ptn-sortable:focus {
+            outline: 2px solid #134b8b;
+            outline-offset: -2px;
+            background-color: #e3f2fd;
+
+        }
+
+        /* Sort indicators */
+        .ptn-sort-indicator {
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+            position: relative;
+            width: 12px;
+            height: 12px;
+        }
+
+        .ptn-sortable[aria-sort="ascending"] .ptn-sort-indicator::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 8px solid #2c3e50;
+            position: absolute;
+            top: 2px;
+        }
+
+        .ptn-sortable[aria-sort="descending"] .ptn-sort-indicator::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #2c3e50;
+            position: absolute;
+            top: 2px;
+        }
+
+        .ptn-sortable[aria-sort="none"] .ptn-sort-indicator::before,
+        .ptn-sortable[aria-sort="none"] .ptn-sort-indicator::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            left: 2px;
+        }
+
+        .ptn-sortable[aria-sort="none"] .ptn-sort-indicator::before {
+            border-bottom: 4px solid #818792;
+            top: 1px;
+        }
+
+        .ptn-sortable[aria-sort="none"] .ptn-sort-indicator::after {
+            border-top: 4px solid #818792;
+            bottom: 1px;
+        }
+
+        /* Mobile responsive design */
+        @media (max-width: 768px) {
+            .wide-only {
+                display: none;
+            }
+
+            .mobile-sort-controls {
+                display: block;
+            }
+
+            .ptn-table table,
+            .ptn-table thead,
+            .ptn-table tbody,
+            .ptn-table th,
+            .ptn-table td,
+            .ptn-table tr {
+                display: block;
+            }
+
+            .ptn-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            .ptn-sort-table thead tr {
+                display: none;
+            }
+
+            .ptn-table tr {
+                border: 1px solid #ccc;
+                margin-bottom: .75rem;
+                padding: .75rem;
+                border-radius: 8px;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .ptn-table tbody tr:nth-child(odd) {
+                background-color: #fff;
+            }
+
+            .ptn-table tr:hover {
+                background-color: white;
+            }
+
+            .ptn-table td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding: .75rem .75rem .75rem 39%;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+            }
+
+            .ptn-table td:last-child {
+                border-bottom: none;
+            }
+
+            .ptn-table td:before {
+                content: attr(data-cell);
+                position: absolute;
+                left: .75rem;
+                width: 33%;
+                padding-right: .75rem;
+                font-weight: 600;
+                color: #2c3e50;
+                font-size: .8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Auto-Extracting Sortable Table</h1>
+
+        <!-- Mobile sort controls - will be populated automatically -->
+        <div class="mobile-sort-controls">
+            <label for="mobile-sort">Sort by:</label>
+            <select id="mobile-sort" class="mobile-sort-select" aria-describedby="mobile-sort-desc">
+                <option value="">Choose a column to sort</option>
+            </select>
+            <span id="mobile-sort-desc" class="sr-only">Select an option to sort the table data</span>
+        </div>
+
+        <table class="ptn-table ptn-sort-table">
+            <caption class="sr-only">
+                Employee Directory <span class="wide-only">Use column headers to sort data</span>
+                <span id="sort-status" aria-live="polite" class="sr-only"></span>
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <button class="ptn-sortable" aria-sort="none" data-column="0" data-type="text"
+                            aria-describedby="name-desc">
+                            <span>Name</span>
+                            <span class="ptn-sort-indicator" aria-hidden="true"></span>
+                        </button>
+                        <span id="name-desc" class="sr-only">Click to sort by name</span>
+                    </th>
+                    <th scope="col">
+                        <button class="ptn-sortable" aria-sort="none" data-column="1" data-type="text"
+                            aria-describedby="dept-desc">
+                            <span>Department</span>
+                            <span class="ptn-sort-indicator" aria-hidden="true"></span>
+                        </button>
+                        <span id="dept-desc" class="sr-only">Click to sort by department</span>
+                    </th>
+                    <th scope="col">
+                        <button class="ptn-sortable" aria-sort="none" data-column="2" data-type="date"
+                            aria-describedby="date-desc">
+                            <span>Hire Date</span>
+                            <span class="ptn-sort-indicator" aria-hidden="true"></span>
+                        </button>
+                        <span id="date-desc" class="sr-only">Click to sort by hire date</span>
+                    </th>
+                    <th scope="col">
+                        <button class="ptn-sortable" aria-sort="none" data-column="3" data-type="currency"
+                            aria-describedby="salary-desc">
+                            <span>Salary</span>
+                            <span class="ptn-sort-indicator" aria-hidden="true"></span>
+                        </button>
+                        <span id="salary-desc" class="sr-only">Click to sort by salary</span>
+                    </th>
+                    <th scope="col" class="status-th">Status</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr>
+                    <td data-cell="Name: ">Johnson, Alice</td>
+                    <td data-cell="Department: ">Engineering</td>
+                    <td data-cell="Hire Date: ">2021-03-15</td>
+                    <td data-cell="Salary: ">$85,000</td>
+                    <td data-cell="Status: "><span class="status positive">Active</span></td>
+                </tr>
+                <tr>
+                    <td data-cell="Name: ">Chen, Bob</td>
+                    <td data-cell="Department: ">Marketing</td>
+                    <td data-cell="Hire Date: ">2020-07-22</td>
+                    <td data-cell="Salary: ">$72,000</td>
+                    <td data-cell="Status: "><span class="status positive">Active</span></td>
+                </tr>
+                <tr>
+                    <td data-cell="Name: ">Davis, Carol</td>
+                    <td data-cell="Department: ">Engineering</td>
+                    <td data-cell="Hire Date: ">2019-01-10</td>
+                    <td data-cell="Salary: ">$92,000</td>
+                    <td data-cell="Status: "><span class="status negative">Inactive</span></td>
+                </tr>
+                <tr>
+                    <td data-cell="Name: ">Wilson, David</td>
+                    <td data-cell="Department: ">Sales</td>
+                    <td data-cell="Hire Date: ">2022-05-03</td>
+                    <td data-cell="Salary: ">$68,000</td>
+                    <td data-cell="Status: "><span class="status pending">Pending</span></td>
+                </tr>
+                <tr>
+                    <td data-cell="Name: ">Martinez, Eva</td>
+                    <td data-cell="Department: ">HR</td>
+                    <td data-cell="Hire Date: ">2018-11-12</td>
+                    <td data-cell="Salary: ">$78,000</td>
+                    <td data-cell="Status: "><span class="status positive">Active</span></td>
+                </tr>
+                <tr>
+                    <td data-cell="Name: ">Thompson, Frank</td>
+                    <td data-cell="Department: ">Engineering</td>
+                    <td data-cell="Hire Date: ">2023-02-20</td>
+                    <td data-cell="Salary: ">$95,000</td>
+                    <td data-cell="Status: "><span class="status positive">Active</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <section class="usage-notes">
+            <h2>Improved Implementation Notes</h2>
+            <ul>
+                <li><strong>Before you choose this:</strong> Adding a sort control (via dropdown above the table) is
+                    generally preferred
+                    over this pattern! This is provided in the event users are used to
+                    table header sorting or the use case leans in this direction (for example, the table needs to mimic
+                    a spreadsheet). See if the <a href="table-extra-features-example.html">basic sort control</a> fits
+                    your needs, as it's easier for both users and developers. </li>
+                <li>Table rows stack on small screens, up to 768px. Sorting functionality is now available on
+                    mobile via the dropdown above the table.</li>
+                <li>Useful for basic text/data tables with no actions or a link to a detail page. (If the interaction is
+                    to a popup or modal, use a button instead of a link; there is a pattern available for that.)</li>
+                <li>Accessibility additions for sorting:
+                    <ul>
+                        <li>All sort controls reachable via Tab and activated with Enter/Space.</li>
+                        <li>Aria-sort indicates current sort state to screen readers</li>
+                        <li>Live regions: Sort changes announced to screen readers</li>
+                        <li>Arrows show sort direction.</li>
+                        <li>Mobile dropdown includes proper labeling and screen reader descriptions.
+                        </li>
+                    </ul>
+                </li>
+                <li>Includes optional status pills for conditions or statuses:
+                    <ul>
+                        <li>Positive (green) = completed, on-track; positive state </li>
+                        <li>Negative (red) = warning, error, off-track; negative state</li>
+                        <li>Pending (blue) = pending; neutral condition</li>
+                        <li>In-progress (yellow) = in progress; neutral or alert condition</li>
+                    </ul>
+                </li>
+                <li>Required caption available to screen readers but accessibly hidden from visual display.</li>
+                <li>(If links are added) Link/focus behaviour will inherit from main stylesheet; make sure those :link,
+                    :hover, and :focus states are accessible.</li>
+                <li>Table will expand to full available width; add constraining container or max-width if needed.</li>
+                <li>Important: Carefully review javascript and adapt as necessary.</li>
+                <li>JavaScript automatically extracts data from the HTML table on
+                    page load</li>
+                <li><strong>How it works:</strong>
+                    <ul>
+                        <li>Add <code>data-type="text|date|currency|number"</code> to sortable header buttons to specify
+                            data type</li>
+                        <li>Use <code>data-column="0"</code> (column index) instead of column names</li>
+                        <li>JavaScript reads existing table rows and builds the data structure automatically</li>
+                        <li>Mobile dropdown options are generated based on sortable columns</li>
+                    </ul>
+                </li>
+                <li><strong>Data Types Supported:</strong>
+                    <ul>
+                        <li><code>text</code> - String comparison (case-insensitive)</li>
+                        <li><code>date</code> - Converts to Date objects for proper sorting</li>
+                        <li><code>currency</code> - Removes $ and commas, sorts as numbers</li>
+                        <li><code>number</code> - Parses as numeric values</li>
+                    </ul>
+                </li>
+                <li><strong>To adapt this table:</strong>
+                    <ul>
+                        <li>Modify the HTML structure as needed</li>
+                        <li>Update the <code>data-type</code> attributes on header buttons</li>
+                        <li>Adjust column indices in <code>data-column</code> attributes</li>
+                    </ul>
+                </li>
+
+            </ul>
+        </section>
+    </div>
+    <script>
+        let tableData = [];
+        let currentSort = { column: null, direction: null };
+
+        // Initialize the table functionality when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            extractTableData();
+            setupEventListeners();
+            populateMobileDropdown();
+        });
+
+        function extractTableData() {
+            const tbody = document.getElementById('table-body');
+            const rows = tbody.querySelectorAll('tr');
+
+            tableData = Array.from(rows).map(row => {
+                const cells = row.querySelectorAll('td');
+                return Array.from(cells).map(cell => ({
+                    text: cell.textContent.trim(),
+                    html: cell.innerHTML,
+                    rawValue: cell.textContent.trim()
+                }));
+            });
+
+            console.log('Extracted table data:', tableData);
+        }
+
+        function setupEventListeners() {
+            // Event listeners for desktop sortable buttons
+            document.querySelectorAll('.ptn-sortable').forEach(button => {
+                button.addEventListener('click', handleSort);
+                button.addEventListener('keydown', handleKeydown);
+            });
+
+            // Event listener for mobile sort dropdown
+            document.getElementById('mobile-sort').addEventListener('change', handleMobileSort);
+        }
+
+        function populateMobileDropdown() {
+            const select = document.getElementById('mobile-sort');
+            const sortableButtons = document.querySelectorAll('.ptn-sortable');
+
+            // Clear existing options except the first one
+            while (select.children.length > 1) {
+                select.removeChild(select.lastChild);
+            }
+
+            sortableButtons.forEach(button => {
+                const columnIndex = parseInt(button.dataset.column);
+                const columnName = button.querySelector('span').textContent;
+
+                // Add ascending option
+                const ascOption = document.createElement('option');
+                ascOption.value = `${columnIndex}-asc`;
+                ascOption.textContent = `${columnName} (A-Z)`;
+                select.appendChild(ascOption);
+
+                // Add descending option
+                const descOption = document.createElement('option');
+                descOption.value = `${columnIndex}-desc`;
+                descOption.textContent = `${columnName} (Z-A)`;
+                select.appendChild(descOption);
+            });
+        }
+
+        function handleKeydown(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleSort(event);
+            }
+        }
+
+        function handleSort(event) {
+            const button = event.currentTarget;
+            const columnIndex = parseInt(button.dataset.column);
+            const dataType = button.dataset.type;
+
+            // Determine sort direction
+            let direction = 'ascending';
+            if (currentSort.column === columnIndex && currentSort.direction === 'ascending') {
+                direction = 'descending';
+            }
+
+            // Apply sort and update UI
+            applySortAndUpdateUI(columnIndex, direction, dataType, button);
+        }
+
+        function handleMobileSort(event) {
+            const value = event.target.value;
+
+            if (!value) {
+                // Reset to original order
+                renderTable(tableData);
+                resetSortState();
+                return;
+            }
+
+            const [columnIndex, direction] = value.split('-');
+            const button = document.querySelector(`[data-column="${columnIndex}"]`);
+            const dataType = button ? button.dataset.type : 'text';
+
+            // Apply sort and update UI
+            applySortAndUpdateUI(parseInt(columnIndex), direction === 'asc' ? 'ascending' : 'descending', dataType);
+        }
+
+        function applySortAndUpdateUI(columnIndex, direction, dataType, sourceButton = null) {
+            // Update ARIA attributes on desktop buttons
+            document.querySelectorAll('.ptn-sortable').forEach(btn => {
+                if (parseInt(btn.dataset.column) === columnIndex) {
+                    btn.setAttribute('aria-sort', direction);
+                } else {
+                    btn.setAttribute('aria-sort', 'none');
+                }
+            });
+
+            // Update mobile dropdown to match
+            const mobileSelect = document.getElementById('mobile-sort');
+            const dropdownValue = `${columnIndex}-${direction === 'ascending' ? 'asc' : 'desc'}`;
+            mobileSelect.value = dropdownValue;
+
+            // Sort the data
+            const sortedData = [...tableData].sort((a, b) => {
+                const aVal = a[columnIndex];
+                const bVal = b[columnIndex];
+
+                return compareValues(aVal.rawValue, bVal.rawValue, dataType, direction);
+            });
+
+            // Update the table
+            renderTable(sortedData);
+
+            // Update current sort state
+            currentSort = { column: columnIndex, direction };
+
+            // Announce to screen readers
+            const statusElement = document.getElementById('sort-status');
+            const columnName = getColumnDisplayName(columnIndex);
+            statusElement.textContent = `Table sorted by ${columnName} in ${direction} order`;
+
+            // Keep focus on the source button if triggered from desktop
+            if (sourceButton) {
+                sourceButton.focus();
+            }
+        }
+
+        function compareValues(aVal, bVal, dataType, direction) {
+            let a, b;
+
+            switch (dataType) {
+                case 'currency':
+                    // Remove $ and commas, then parse as number
+                    a = parseFloat(aVal.replace(/[$,]/g, '')) || 0;
+                    b = parseFloat(bVal.replace(/[$,]/g, '')) || 0;
+                    return direction === 'ascending' ? a - b : b - a;
+
+                case 'number':
+                    a = parseFloat(aVal) || 0;
+                    b = parseFloat(bVal) || 0;
+                    return direction === 'ascending' ? a - b : b - a;
+
+                case 'date':
+                    a = new Date(aVal);
+                    b = new Date(bVal);
+                    return direction === 'ascending' ? a - b : b - a;
+
+                case 'text':
+                default:
+                    a = aVal.toLowerCase();
+                    b = bVal.toLowerCase();
+                    if (direction === 'ascending') {
+                        return a < b ? -1 : a > b ? 1 : 0;
+                    } else {
+                        return a > b ? -1 : a < b ? 1 : 0;
+                    }
+            }
+        }
+
+        function resetSortState() {
+            // Reset all ARIA attributes
+            document.querySelectorAll('.ptn-sortable').forEach(btn => {
+                btn.setAttribute('aria-sort', 'none');
+            });
+
+            // Reset mobile dropdown
+            document.getElementById('mobile-sort').value = '';
+
+            // Reset current sort state
+            currentSort = { column: null, direction: null };
+
+            // Announce reset to screen readers
+            const statusElement = document.getElementById('sort-status');
+            statusElement.textContent = 'Table restored to original order';
+        }
+
+        function getColumnDisplayName(columnIndex) {
+            const button = document.querySelector(`[data-column="${columnIndex}"]`);
+            return button ? button.querySelector('span').textContent : `Column ${columnIndex + 1}`;
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    ${row.map((cell, index) => {
+                const originalCell = tbody.children[0]?.children[index];
+                const dataCell = originalCell ? originalCell.getAttribute('data-cell') : '';
+                return `<td data-cell="${dataCell}">${cell.html}</td>`;
+            }).join('')}
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>
