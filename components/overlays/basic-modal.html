@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Modal</title>
+    <style>
+        /* These are just to format the example page; don't copy*/
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: #fff;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        .demo-btn {
+            all: unset;
+            background-color: #2170CA;
+            color: #fff;
+            padding: .675rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .demo-btn:hover,
+        .demo-btn:focus {
+            background-color: var(--accent);
+        }
+
+        .demo-btn:focus {
+            outline: 2px dotted black;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+
+        /* IMPORTANT: copy styles from this point forward only*/
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --ground: #e8eff3;
+            --mainblue: #2170CA;
+            --accent: #134b8b;
+            --radius: 4px;
+        }
+
+
+        /* Ensure modals are initially hidden */
+        .ptn-modal-element {
+            display: none;
+        }
+
+        /* When inside an overlay, they should be displayed */
+        .ptn-modal-overlay .ptn-modal-element {
+            display: block;
+        }
+
+
+        .modal:before,
+        .ptn-modal-styled:before {
+            content: " ";
+            display: block;
+            background: linear-gradient(90deg, rgba(66, 168, 221, 1) 0%, rgba(18, 35, 97, 1) 100%);
+            height: 10px;
+            border-top-left-radius: var(--radius);
+            border-top-right-radius: var(--radius);
+
+        }
+
+        .ptn-modal-interior {
+            padding: 12px 28px 2rem 28px;
+        }
+
+        .ptn-modal-interior h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1.4rem;
+        }
+
+
+        .ptn-modal-close {
+            position: absolute;
+            top: 18px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--ground);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            line-height: 1;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            padding: 0;
+            transform: translateY(-2px);
+        }
+
+        .ptn-modal-close:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.1);
+        }
+
+        .ptn-modal-close:focus {
+            outline: 2px dotted black;
+            outline-offset: 2px;
+            border-radius: 50%;
+        }
+
+        .ptn-modal-overlay {
+            backdrop-filter: blur(2px);
+        }
+
+        /*styles for demo button -- no need to copy. You should use classes that match your app */
+
+        .test-btn,
+        .test-btn2 {
+            all: unset;
+            padding: .675rem 1rem;
+            margin-right: .5rem;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .test-btn {
+            background-color: var(--mainblue);
+            color: white;
+
+        }
+
+        .test-btn:hover,
+        .test-btn:focus {
+            background-color: var(--accent);
+        }
+
+        .test-btn2 {
+            background-color: var(--ground);
+            color: var(--dark-text);
+
+        }
+
+        .test-btn2:hover,
+        .test-btn2:focus {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .ptn-modal-btnbar {
+            padding: 1.25rem 0 1rem 0;
+        }
+
+        .ptn-modal-btnbar button:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Basic modal window</h1>
+
+        <p>Click to launch modal:</p>
+        <p><button onclick="openModal('myModal')" type="button" class="demo-btn">Open 860 Modal</button></p>
+
+
+        <!-- modal content-->
+        <div id="myModal" class="ptn-modal-element" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+            data-modal-size="860px">
+            <button class="ptn-modal-close" onclick="closeModal('myModal')" aria-label="Close modal">&times;</button>
+            <div class="ptn-modal-interior">
+                <h2 id="ptn-modal-title">Main heading for the modal content</h2>
+
+                <p>Main content for the modal goes here. </p>
+
+                <ul>
+                    <li>Example terms and conditions statement </li>
+                    <li>Example legal notice </li>
+                    <li>Example policy statement </li>
+
+                </ul>
+                <p>Adding some inactive buttons just to demo how focus works.</p>
+
+                <div class="ptn-modal-btnbar">
+                    <button class="test-btn">Sample button here</button>
+                    <button class="test-btn2">Another button</button>
+                </div>
+
+            </div>
+        </div>
+        <!--end modal content-->
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li><strong>Instructions:</strong>
+                    <ol>
+                        <li>Include the script in the HTML</li>
+                        <li>Add the modal markup anywhere in the HTML. Each modal <strong>must</strong> have a unique
+                            ID.</li>
+                        <li>Call the launching js [openModal('myModal')] from a button (strongly preferred), link, or
+                            script. </li>
+
+                    </ol>
+                </li>
+                <li>To set a custom max width, set the data-modal-size attribute in the modal markup. This will let you
+                    adjust the width to
+                    match the expected content. </li>
+                <li>Modal design can be set in the CSS. There is also default styling for the overlay and modal div in
+                    the JavaScript, clearly labeled.</li>
+
+            </ul>
+
+        </section>
+
+    </div>
+    <script src="modal-sh.js"></script>
+</body>
+
+</html>
