@@ -29,6 +29,14 @@
             font-weight: 600;
         }
 
+        h2 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
         .usage-notes {
             margin: 4rem 0 1.25rem 0;
             border: 2px solid #dce0e3;
@@ -78,6 +86,7 @@
             color: #fff;
             padding: .675rem 1rem;
             border-radius: 4px;
+            margin: 0 .5rem 0 3px;
             transition: background-color 0.3s ease;
         }
 
@@ -91,6 +100,8 @@
             outline-offset: 2px;
             border-radius: 4px;
         }
+
+
 
 
         /* IMPORTANT: copy styles from this point forward only*/
@@ -152,10 +163,10 @@
 
         .ptn-modal-close {
             position: absolute;
-            top: 18px;
-            right: 10px;
-            width: 30px;
-            height: 30px;
+            top: 22px;
+            right: 14px;
+            width: 44px;
+            height: 44px;
             background-color: var(--ground);
             border: none;
             border-radius: 50%;
@@ -180,7 +191,6 @@
 
         .ptn-modal-close:focus {
             outline: 2px dotted black;
-            outline-offset: 2px;
             border-radius: 50%;
         }
 
@@ -193,7 +203,7 @@
         .test-btn,
         .test-btn2 {
             all: unset;
-            padding: .675rem 1rem;
+            padding: .675rem 1.25rem;
             margin-right: .5rem;
             transition: background-color 0.3s ease;
             border-radius: 5px;
@@ -239,12 +249,11 @@
         <h1>Basic modal window</h1>
 
         <p>Click to launch modal:</p>
-        <p><button onclick="openModal('myModal')" type="button" class="demo-btn">Open 860 Modal</button></p>
+        <p><button onclick="openModal('myModal')" type="button" class="demo-btn">Open Modal</button></p>
 
 
         <!-- modal content-->
-        <div id="myModal" class="ptn-modal-element" role="dialog" aria-modal="true" aria-labelledby="modal-title"
-            data-modal-size="860px">
+        <div id="myModal" class="ptn-modal-element" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <button class="ptn-modal-close" onclick="closeModal('myModal')" aria-label="Close modal">&times;</button>
             <div class="ptn-modal-interior">
                 <h2 id="ptn-modal-title">Main heading for the modal content</h2>
@@ -268,6 +277,54 @@
         </div>
         <!--end modal content-->
 
+
+        <h2>Adjusting the size</h2>
+        <p>These buttons launch modals where the max-width has been adjusted using the data-modal-size attribute.</p>
+        <p><button onclick="openModal('bigModal')" type="button" class="demo-btn">Open Big Modal</button> <button
+                onclick="openModal('smallModal')" type="button" class="demo-btn">Open Small Modal</button></p>
+
+        <!-- modal content-->
+        <div id="bigModal" class="ptn-modal-element" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+            data-modal-size="1000px">
+            <button class="ptn-modal-close" onclick="closeModal('bigModal')" aria-label="Close modal">&times;</button>
+            <div class="ptn-modal-interior">
+                <h2 id="ptn-modal-title">Main heading for the modal content</h2>
+
+                <p>Main content for the modal goes here. </p>
+
+                <p>By accessing and using this application, you agree to comply with all applicable laws and
+                    regulations. The information and services provided herein are for general informational purposes
+                    only and do not constitute legal, financial, or professional advice. The application and its content
+                    are provided “as is” without warranty of any kind, either express or implied. We reserve the right
+                    to modify, suspend, or discontinue any aspect of the application at any time without prior notice.
+                </p>
+
+                <p>Your continued use of this application signifies your acceptance of these terms and any future
+                    amendments. You are responsible for maintaining the confidentiality of your account information and
+                    for all activities that occur under your account. Unauthorized use of the application may give rise
+                    to a claim for damages and/or be a criminal offense. Please review these terms regularly to ensure
+                    you are aware of any changes.</p>
+
+            </div>
+        </div>
+        <!--end modal content-->
+
+        <!-- modal content-->
+        <div id="smallModal" class="ptn-modal-element" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+            data-modal-size="600px">
+            <button class="ptn-modal-close" onclick="closeModal('smallModal')" aria-label="Close modal">&times;</button>
+            <div class="ptn-modal-interior">
+                <h2 id="ptn-modal-title">Small modal -- 600px max</h2>
+
+                <p>Main content for the modal goes here. </p>
+                <p>Good for confirmations, acknowledgements, etc. You can make the size anything that you want.</p>
+
+
+            </div>
+        </div>
+        <!--end modal content-->
+
+
         <section class="usage-notes">
             <h2>Usage notes</h2>
             <ul>
@@ -283,9 +340,12 @@
                 </li>
                 <li>To set a custom max width, set the data-modal-size attribute in the modal markup. This will let you
                     adjust the width to
-                    match the expected content. </li>
-                <li>Modal design can be set in the CSS. There is also default styling for the overlay and modal div in
-                    the JavaScript, clearly labeled.</li>
+                    match the expected content. Leaving this out will make the modal the default size, which is set in
+                    the .js file (800px). You can adjust that max-width in the script to change the default size
+                    universally.</li>
+                <li>Some default styling is set in the .js. You can also adjust the formatting in the CSS, including
+                    adding additional classes to visually distinguish different modals (for example, errors, warnings,
+                    confirmations could be themed).</li>
 
             </ul>
 

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Modal</title>
+    <style>
+        /* These are just to format the example page; don't copy, as they might overwrite your existing styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: #fff;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        .demo-btn {
+            all: unset;
+            background-color: #2170CA;
+            color: #fff;
+            padding: .675rem 1rem;
+            border-radius: 4px;
+            margin: 0 .5rem 0 3px;
+            transition: background-color 0.3s ease;
+        }
+
+        .demo-btn:hover,
+        .demo-btn:focus {
+            background-color: var(--accent);
+        }
+
+        .demo-btn:focus {
+            outline: 2px dotted black;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+
+
+
+        /* IMPORTANT: copy styles from this point forward only*/
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --ground: #e8eff3;
+            --mainblue: #2170CA;
+            --accent: #134b8b;
+            --radius: 4px;
+        }
+
+        .ptn-dialog {
+            border: none;
+            padding: 0;
+            border-radius: 6px;
+            max-width: 860px;
+
+        }
+
+        .ptn-dialog:before {
+            content: " ";
+            display: block;
+            background: linear-gradient(90deg, rgba(66, 168, 221, 1) 0%, rgba(18, 35, 97, 1) 100%);
+            height: 10px;
+            border-top-left-radius: var(--radius);
+            border-top-right-radius: var(--radius);
+
+        }
+
+        .ptn-dialog-interior {
+            padding: 12px 28px 2rem 28px;
+        }
+
+        .ptn-dialog-interior h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1.4rem;
+        }
+
+
+        .ptn-dialog-close {
+            position: absolute;
+            top: 22px;
+            right: 14px;
+            width: 44px;
+            height: 44px;
+            background-color: var(--ground);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            line-height: 1;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            padding: 0;
+            transform: translateY(-2px);
+        }
+
+        .ptn-dialog-close:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.1);
+        }
+
+        .ptn-dialog-close:focus {
+            outline: 2px dotted black;
+            border-radius: 50%;
+        }
+
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(2px);
+
+        }
+
+        /*styles for demo button -- no need to copy. You should use classes that match your app */
+
+        .test-btn,
+        .test-btn2 {
+            all: unset;
+            padding: .675rem 1.25rem;
+            margin-right: .5rem;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .test-btn {
+            background-color: var(--mainblue);
+            color: white;
+
+        }
+
+        .test-btn:hover,
+        .test-btn:focus {
+            background-color: var(--accent);
+        }
+
+        .test-btn2 {
+            background-color: var(--ground);
+            color: var(--dark-text);
+
+        }
+
+        .test-btn2:hover,
+        .test-btn2:focus {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .ptn-modal-btnbar {
+            padding: 1.25rem 0 1rem 0;
+        }
+
+        .ptn-modal-btnbar button:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Basic modal using native dialog element</h1>
+
+        <p>Click to launch modal:</p>
+        <p><button class="demo-btn ptn-opendialog-btn" data-dialog="info-dialog">
+                Information Dialog
+            </button></p>
+
+
+
+        <!-- Information Dialog -->
+        <dialog id="info-dialog" class="ptn-dialog" aria-modal="true" aria-labelledby="this-title">
+            <div class="ptn-dialog-interior">
+                <h2 id="this-title">About Dialog Elements</h2>
+                <button class="ptn-dialog-close" onclick="closeDialog('info-dialog')">&times;</button>
+                <div class="dialog-content">
+                    <p>The HTML <code>dialog</code> element represents a modal or non-modal dialog box or other
+                        interactive component.</p>
+                    <p>Key benefits include:</p>
+                    <ul>
+                        <li>Built-in accessibility features</li>
+                        <li>Automatic focus management</li>
+                        <li>ESC key handling</li>
+                        <li>Backdrop styling with <code>::backdrop</code></li>
+                        <li>Form integration capabilities</li>
+                    </ul>
+                </div>
+                <div class="ptn-modal-btnbar">
+
+                    <button class="test-btn"
+                        onclick="window.open('https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog', '_blank')">Learn
+                        More</button>
+                    <button class="test-btn2" onclick="closeDialog('info-dialog')">Close</button>
+                </div>
+            </div>
+        </dialog>
+
+        <!--end modal content-->
+
+        <h2>(Optional) Changing the size</h2>
+
+        <p>View a smaller version where the max-width has been declared:</p>
+        <p><button class="demo-btn ptn-opendialog-btn" data-dialog="small-dialog">
+                Smaller Dialog
+            </button></p>
+
+        <dialog id="small-dialog" class="ptn-dialog" data-modal-size="600px" aria-modal="true"
+            aria-labelledby="tiny-title">
+
+            <div class="ptn-dialog-interior">
+                <h2 id="tiny-title">I'm a smaller version</h2>
+                <button class="ptn-dialog-close" onclick="closeDialog('small-dialog')">&times;</button>
+                <div class="dialog-content">
+                    <p>This dialog has an optional data-modal-size set on the <code>dialog</code> element.</p>
+
+                </div>
+                <div class="ptn-modal-btnbar">
+
+                    <button class="test-btn"
+                        onclick="window.open('https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog', '_blank')">Learn
+                        More</button>
+                    <button class="test-btn2" onclick="closeDialog('info-dialog')">Close</button>
+                </div>
+            </div>
+        </dialog>
+
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li>This modal uses the native <code>dialog</code>, along with javascript to handle the focus trapping.
+                </li>
+                <li><strong>Instructions:</strong>
+                    <ol>
+                        <li>Put the <code>ptn-opendialog-btn</code> class on the trigger button.</li>
+                        <li>Add the dialog markup anywhere in the HTML. Each modal <strong>must</strong> have a unique
+                            ID that must be added to the trigger's custom data attribute (<code>data-dalog</code>).</li>
+                        <li>Add an ID to the dialog header and reference it in the dialog's
+                            <code>aria-labelledby</code>.
+                        </li>
+
+                    </ol>
+                </li>
+
+                <li>You can adjust the formatting in the CSS, including
+                    adding additional classes to visually distinguish different modals (for example, errors, warnings,
+                    confirmations could be themed).</li>
+
+            </ul>
+
+        </section>
+
+    </div>
+
+    <script>
+        // Generic dialog open handler
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.ptn-opendialog-btn');
+            if (btn && btn.dataset.dialog) {
+                const dialog = document.getElementById(btn.dataset.dialog);
+                if (dialog) {
+                    // Set max-width from data-modal-size if present, else use default
+                    if (dialog.dataset.modalSize) {
+                        dialog.style.maxWidth = dialog.dataset.modalSize;
+                    } else {
+                        dialog.style.maxWidth = '';
+                    }
+                    dialog.showModal();
+                    trapFocus(dialog);
+                }
+            }
+        });
+
+        // Generic dialog close handler
+        function closeDialog(dialogId) {
+            const dialog = document.getElementById(dialogId);
+            dialog.close();
+            removeTrapFocus(dialog);
+        }
+
+        // Focus trap for dialog
+        function trapFocus(dialog) {
+            const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+            const focusableElements = dialog.querySelectorAll(focusableSelectors);
+            if (focusableElements.length === 0) return;
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            function handleTab(e) {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) {
+                        if (document.activeElement === firstElement) {
+                            e.preventDefault();
+                            lastElement.focus();
+                        }
+                    } else {
+                        if (document.activeElement === lastElement) {
+                            e.preventDefault();
+                            firstElement.focus();
+                        }
+                    }
+                }
+            }
+            dialog.addEventListener('keydown', handleTab);
+            dialog._trapFocusHandler = handleTab;
+            // Focus the first element
+            firstElement.focus();
+        }
+
+        function removeTrapFocus(dialog) {
+            if (dialog._trapFocusHandler) {
+                dialog.removeEventListener('keydown', dialog._trapFocusHandler);
+                dialog._trapFocusHandler = null;
+            }
+        }
+
+        // Close dialogs when clicking on backdrop
+        document.querySelectorAll('dialog').forEach(dialog => {
+            dialog.addEventListener('click', function (event) {
+                if (event.target === dialog) {
+                    dialog.close();
+                    removeTrapFocus(dialog);
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
