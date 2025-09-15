@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizontal tab component </title>
+    <style>
+        /* These are just to format the example page; don't copy*/
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: white;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+            padding: .25rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+
+
+        .ptn-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--dark-text)
+        }
+
+        .ptn-table th {
+            color: var(--dark-text);
+            padding: 1rem .75rem .75rem .75rem;
+            text-align: left;
+            font-weight: 400;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+        }
+
+        .ptn-table td {
+            padding: .75rem;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+
+
+        .ptn-table tbody tr:nth-child(odd) {
+            background-color: #f6f8fa;
+        }
+
+        .ptn-table tbody tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .ptn-table tbody tr:hover {
+            background-color: #f0f2f3;
+        }
+
+        /* adjust link color/style here */
+        .ptn-table .name-link {
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .ptn-table .name-link:hover,
+        .ptn-table .name-link:focus {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        /* Mobile responsive design */
+        @media (max-width: 768px) {
+
+            .ptn-table table,
+            .ptn-table thead,
+            .ptn-table tbody,
+            .ptn-table th,
+            .ptn-table td,
+            .ptn-table tr {
+                display: block;
+            }
+
+            .ptn-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            .ptn-table tr {
+                border: 1px solid #ccc;
+                margin-bottom: .75rem;
+                padding: .75rem;
+                border-radius: 8px;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .ptn-table tbody tr:nth-child(odd) {
+                background-color: #fff;
+            }
+
+            .ptn-table tr:hover {
+                background-color: white;
+            }
+
+            .ptn-table td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding: .75rem .75rem .75rem 39%;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+            }
+
+            .ptn-table td:last-child {
+                border-bottom: none;
+            }
+
+            .ptn-table td:before {
+                content: attr(data-cell);
+                position: absolute;
+                left: .75rem;
+                width: 33%;
+                padding-right: .75rem;
+                font-weight: 600;
+                color: #2c3e50;
+                font-size: .8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+        }
+
+
+        /* IMPORTANT: copy css from this point forward */
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --ground: #e8eff3;
+            --mainblue: #2170CA;
+            --accent: #134b8b;
+            --highlight: #0157a8;
+            --radius: 4px;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+
+
+        .ptn-tabs-container {
+            box-sizing: border-box;
+            margin: 0 auto;
+            overflow: hidden;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--border-light);
+
+        }
+
+        .ptn-tablist {
+            display: flex;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            background-color: #ecedef;
+        }
+
+        .ptn-tablist::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .ptn-tablist::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .ptn-tablist::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+
+        .ptn-tab {
+            background: none;
+            border: none;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #6c757d;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 120px;
+            position: relative;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .ptn-tab:hover {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .ptn-tab:focus {
+            outline: 2px solid var(--highlight);
+            outline-offset: -2px;
+            background-color: #e3f2fd;
+            color: var(--mainblue);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Selected tab (content is showing) */
+        .ptn-tab[aria-selected="true"] {
+            color: var(--highlight);
+            background-color: white;
+            border-bottom-color: var(var(--highlight));
+        }
+
+        /* Selected tab when focused */
+        .ptn-tab[aria-selected="true"]:focus {
+            outline-color: var(--accent);
+            background-color: #f8f9ff;
+        }
+
+        .ptn-tabpanel {
+            padding: 24px;
+            display: none;
+            min-height: 200px;
+        }
+
+        /* Adjust heading to match your application's structure */
+        .ptn-tabpanel h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            padding: .5rem 0;
+        }
+
+        .ptn-tabpanel.ptn-active {
+            display: block;
+        }
+
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .ptn-tab {
+                padding: 14px 16px;
+                font-size: 14px;
+                min-width: 100px;
+            }
+
+            .ptn-tabpanel {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ptn-tab {
+                padding: 12px 12px;
+                font-size: 13px;
+                min-width: 80px;
+            }
+
+            .ptn-tabpanel {
+                padding: 12px;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .ptn-tab {
+                border: 1px solid;
+            }
+
+            .ptn-tab[aria-selected="true"] {
+                background-color: HighlightText;
+                color: Highlight;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            .ptn-tab {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Horizontal Tab Component (Manual activation)</h1>
+
+
+        <div class="ptn-tabs-container">
+            <!-- Replace "example tabs" with a helpful label for the tab set below-->
+            <ul class="ptn-tablist" role="tablist" aria-label="Example tabs">
+                <li role="presentation">
+                    <button class="ptn-tab" role="tab" aria-selected="true" aria-controls="ptn-panel-1" id="ptn-tab-1"
+                        tabindex="0">
+                        Overview
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button class="ptn-tab" role="tab" aria-selected="false" aria-controls="ptn-panel-2" id="ptn-tab-2"
+                        tabindex="-1">
+                        Project history
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button class="ptn-tab" role="tab" aria-selected="false" aria-controls="ptn-panel-3" id="ptn-tab-3"
+                        tabindex="-1">
+                        Team members
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button class="ptn-tab" role="tab" aria-selected="false" aria-controls="ptn-panel-4" id="ptn-tab-4"
+                        tabindex="-1">
+                        Budget
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button class="ptn-tab" role="tab" aria-selected="false" aria-controls="ptn-panel-5" id="ptn-tab-5"
+                        tabindex="-1">
+                        Sponsors
+                    </button>
+                </li>
+            </ul>
+
+            <div class="ptn-tabpanel ptn-active" role="tabpanel" id="ptn-panel-1" aria-labelledby="ptn-tab-1"
+                tabindex="0">
+                <h2>Overview</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                    culpa qui officia deserunt mollit anim id est laborum. </p>
+                <p>(This is the default starting panel -- Panel 1, Overview.) </p>
+            </div>
+
+            <div class="ptn-tabpanel" role="tabpanel" id="ptn-panel-2" aria-labelledby="ptn-tab-2" tabindex="0">
+                <h2>Project history</h2>
+                <ol>
+                    <li>Submitted for approval: May 12, 2023</li>
+                    <li>Approved: June 10, 2023</li>
+                    <li>Funding granted: August 2, 2023</li>
+                    <li>Supplemental grant awarded: Jan 12, 2024</li>
+                </ol>
+
+
+            </div>
+
+            <div class="ptn-tabpanel" role="tabpanel" id="ptn-panel-3" aria-labelledby="ptn-tab-3" tabindex="0">
+                <h2>Team members</h2>
+                <ul>
+                    <li>Alex Johnson [PI]</li>
+                    <li>Samir Chen</li>
+                    <li>Maria Garcia</li>
+                    <li>Jordan Lee</li>
+                    <li>Priya Patel</li>
+
+                    <li>Emily Smith</li>
+                </ul>
+
+
+            </div>
+
+            <div class="ptn-tabpanel" role="tabpanel" id="ptn-panel-4" aria-labelledby="ptn-tab-4" tabindex="0">
+                <table class="ptn-table">
+                    <caption class="sr-only">Budget totals for pretend project</caption>
+                    <thead>
+                        <tr>
+                            <th>Budget Expense</th>
+                            <th>Approval Cost</th>
+                            <th>Actual Cost</th>
+                            <th>Account</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Salaries</td>
+                            <td>$120,000</td>
+                            <td>$118,500</td>
+                            <td>1-102345</td>
+                        </tr>
+                        <tr>
+                            <td>Facilities</td>
+                            <td>$40,000</td>
+                            <td>$41,200</td>
+                            <td>1-104567</td>
+                        </tr>
+                        <tr>
+                            <td>Equipment</td>
+                            <td>$25,000</td>
+                            <td>$24,800</td>
+                            <td>1-108901</td>
+                        </tr>
+                        <tr>
+                            <td>Travel</td>
+                            <td>$10,000</td>
+                            <td>$9,750</td>
+                            <td>1-109876</td>
+                        </tr>
+                        <tr>
+                            <td>Supplies</td>
+                            <td>$8,000</td>
+                            <td>$7,950</td>
+                            <td>1-107654</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
+
+            <div class="ptn-tabpanel" role="tabpanel" id="ptn-panel-5" aria-labelledby="ptn-tab-5" tabindex="0">
+                <h2>Sponsors</h2>
+                <ul>
+                    <li>National Science Foundation (NSF)</li>
+                    <li>Global Health Research Trust</li>
+                    <li>InnovateX Corporation</li>
+                    <li>Green Future Initiative</li>
+                    <li>World Academic Alliance</li>
+                </ul>
+
+            </div>
+        </div>
+
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li>Manually activated -- notice that the content doesn't change until you press Enter or Space.</li>
+                <li>How to operate:
+                    <ul>
+                        <li><strong>Arrow keys</strong>: Navigate/browse tabs (focus moves, content stays)</li>
+                        <li><strong>Enter/Space</strong>: Activate the focused tab (changes content)</li>
+                        <li><strong>Home/End</strong>: Jump to first/last tab</li>
+                    </ul>
+                </li>
+                <li>Add JavaScript and CSS to existing code. Adjust panel (content) IDs on the buttons and on each panel
+                    <code>div</code> if adding additional tabs or tab components.
+                </li>
+
+                <li>This example includes some subheadings. If using, adjust the level to fit the structure of the
+                    existing
+                    content. Adjust the css to format. You can also add a subheading and hide it visually using the
+                    included sr-only class if the heading is needed for semantic html. </li>
+                <li>On mobile the tabs shrink and the tablist becomes scrollable, preserving the tab layout (instead of
+                    stacking). </li>
+                <li>Other features:
+                    <ul>
+                        <li>Touch-friendly mobile interface</li>
+                        <li>High contrast mode support</li>
+                        <li>Reduced motion accessibility</li>
+                    </ul>
+
+                </li>
+
+            </ul>
+
+        </section>
+
+    </div>
+    <script>
+        class PTNTabs {
+            constructor(container) {
+                this.container = container;
+                this.tablist = container.querySelector('.ptn-tablist');
+                this.tabs = Array.from(container.querySelectorAll('.ptn-tab'));
+                this.panels = Array.from(container.querySelectorAll('.ptn-tabpanel'));
+
+                // Track which tab is selected (content showing) vs focused (has keyboard focus)
+                this.selectedIndex = 0;
+                this.focusedIndex = 0;
+
+                this.init();
+            }
+
+            init() {
+                // Set up event listeners
+                this.tabs.forEach((tab, index) => {
+                    // Click both focuses and selects
+                    tab.addEventListener('click', () => {
+                        this.setFocus(index);
+                        this.setSelection(index);
+                    });
+
+                    // Keyboard navigation
+                    tab.addEventListener('keydown', (e) => this.handleKeyDown(e));
+                });
+
+                // Initialize: first tab is both focused and selected
+                this.setSelection(0);
+                this.setFocus(0);
+            }
+
+            setSelection(index) {
+                // Change which tab is selected (which content is visible)
+                this.selectedIndex = index;
+
+                // Update ARIA attributes for tabs
+                this.tabs.forEach((tab, i) => {
+                    tab.setAttribute('aria-selected', i === index ? 'true' : 'false');
+                });
+
+                // Update which panel is visible
+                this.panels.forEach((panel, i) => {
+                    if (i === index) {
+                        panel.classList.add('ptn-active');
+                    } else {
+                        panel.classList.remove('ptn-active');
+                    }
+                });
+            }
+
+            setFocus(index) {
+                // Change which tab has keyboard focus (doesn't change content)
+                this.focusedIndex = index;
+
+                // Update tabindex for roving focus
+                this.tabs.forEach((tab, i) => {
+                    tab.setAttribute('tabindex', i === index ? '0' : '-1');
+                });
+
+                // Actually focus the tab
+                this.tabs[index].focus();
+
+                // Scroll into view if needed
+                this.scrollTabIntoView(this.tabs[index]);
+            }
+
+            scrollTabIntoView(tab) {
+                const tablist = this.tablist;
+                const tabLeft = tab.offsetLeft;
+                const tabRight = tabLeft + tab.offsetWidth;
+                const listLeft = tablist.scrollLeft;
+                const listRight = listLeft + tablist.clientWidth;
+
+                if (tabLeft < listLeft) {
+                    tablist.scrollLeft = tabLeft - 10;
+                } else if (tabRight > listRight) {
+                    tablist.scrollLeft = tabRight - tablist.clientWidth + 10;
+                }
+            }
+
+            handleKeyDown(event) {
+                let targetIndex = this.focusedIndex;
+
+                switch (event.key) {
+                    case 'ArrowLeft':
+                        event.preventDefault();
+                        targetIndex = this.focusedIndex > 0 ? this.focusedIndex - 1 : this.tabs.length - 1;
+                        this.setFocus(targetIndex);
+                        break;
+
+                    case 'ArrowRight':
+                        event.preventDefault();
+                        targetIndex = this.focusedIndex < this.tabs.length - 1 ? this.focusedIndex + 1 : 0;
+                        this.setFocus(targetIndex);
+                        break;
+
+                    case 'Home':
+                        event.preventDefault();
+                        this.setFocus(0);
+                        break;
+
+                    case 'End':
+                        event.preventDefault();
+                        this.setFocus(this.tabs.length - 1);
+                        break;
+
+                    case 'Enter':
+                    case ' ':
+                        event.preventDefault();
+                        // Select the currently focused tab
+                        this.setSelection(this.focusedIndex);
+                        break;
+                }
+            }
+        }
+
+        // Helper function for multiple instances
+        function initAllPTNTabs() {
+            const allTabsContainers = document.querySelectorAll('.ptn-tabs-container');
+            allTabsContainers.forEach(container => {
+                new PTNTabs(container);
+            });
+        }
+
+        // Initialize all tab components when DOM is ready
+        document.addEventListener('DOMContentLoaded', initAllPTNTabs);
+    </script>
+</body>
+
+</html>
