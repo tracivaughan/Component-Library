@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCAG-Compliant Vertical Tabs Component</title>
+    <style>
+        /* These are just to format the example page; don't copy*/
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: white;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+            padding: .25rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+
+        /* IMPORTANT: copy css from this point forward */
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --ground: #e8eff3;
+            --mainblue: #2170CA;
+            --accent: #134b8b;
+            --highlight: #0157a8;
+            --radius: 4px;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .ptn-vtabs-container {
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            min-height: 400px;
+        }
+
+        .ptn-vtablist {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            background-color: var(--ground);
+            border-right: 2px solid #e9ecef;
+            min-width: 200px;
+            max-width: 300px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            flex-shrink: 0;
+        }
+
+        .ptn-vtablist::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .ptn-vtablist::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .ptn-vtablist::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+
+        .ptn-vtab {
+            box-sizing: border-box;
+            background: none;
+            border: 2px solid transparent;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #6c757d;
+            cursor: pointer;
+            text-align: left;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            width: 100%;
+        }
+
+        .ptn-vtab:hover {
+            background-color: #e3f2fd;
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .ptn-vtab:focus {
+            outline: 2px solid #007bff;
+            outline-offset: -2px;
+            background-color: #e3f2fd;
+            color: #1976d2;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Selected tab (content is showing) */
+        .ptn-vtab[aria-selected="true"] {
+            color: #007bff;
+            background-color: white;
+            border-left-color: #007bff;
+        }
+
+        /* Selected tab when focused */
+        .ptn-vtab[aria-selected="true"]:focus {
+            outline-color: #0056b3;
+            background-color: #f8f9ff;
+        }
+
+        .ptn-content-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ptn-vtabpanel {
+            padding: 24px;
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .ptn-vtabpanel.ptn-active {
+            display: block;
+        }
+
+
+        /* Mobile responsiveness - stack vertically */
+        @media (max-width: 768px) {
+            .ptn-vtabs-container {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .ptn-vtablist {
+                flex-direction: row;
+                border-right: none;
+                border-bottom: 2px solid #e9ecef;
+                min-width: auto;
+                max-width: none;
+                overflow-x: auto;
+                overflow-y: visible;
+                max-height: none;
+            }
+
+            .ptn-vtab {
+                flex-shrink: 0;
+                min-width: 120px;
+                text-align: center;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                padding: 14px 16px;
+                font-size: 14px;
+            }
+
+            .ptn-vtab[aria-selected="true"] {
+                border-left-color: transparent;
+                border-bottom-color: #007bff;
+            }
+
+            .ptn-content-area {
+                flex: none;
+            }
+
+            .ptn-vtabpanel {
+                padding: 16px;
+                height: auto;
+                overflow-y: visible;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ptn-vtab {
+                padding: 12px;
+                font-size: 13px;
+                min-width: 100px;
+            }
+
+            .ptn-vtabpanel {
+                padding: 12px;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .ptn-vtab {
+                border: 1px solid;
+            }
+
+            .ptn-vtab[aria-selected="true"] {
+                background-color: HighlightText;
+                color: Highlight;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            .ptn-vtab {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Vertical Tabs Component - Manual Activation</h1>
+
+
+        <div class="ptn-vtabs-container">
+            <ul class="ptn-vtablist" role="tablist" aria-label="Vertical navigation tabs" aria-orientation="vertical">
+                <li role="presentation">
+                    <button class="ptn-vtab" role="tab" aria-selected="true" aria-controls="ptn-panel-1" id="ptn-tab-1"
+                        tabindex="0">
+                        Dashboard
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button class="ptn-vtab" role="tab" aria-selected="false" aria-controls="ptn-panel-2" id="ptn-tab-2"
+                        tabindex="-1">
+                        Analytics
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button class="ptn-vtab" role="tab" aria-selected="false" aria-controls="ptn-panel-3" id="ptn-tab-3"
+                        tabindex="-1">
+                        Reports
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button class="ptn-vtab" role="tab" aria-selected="false" aria-controls="ptn-panel-4" id="ptn-tab-4"
+                        tabindex="-1">
+                        Users
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button class="ptn-vtab" role="tab" aria-selected="false" aria-controls="ptn-panel-5" id="ptn-tab-5"
+                        tabindex="-1">
+                        Settings
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button class="ptn-vtab" role="tab" aria-selected="false" aria-controls="ptn-panel-6" id="ptn-tab-6"
+                        tabindex="-1">
+                        Security
+                    </button>
+                </li>
+            </ul>
+
+            <div class="ptn-content-area">
+                <div class="ptn-vtabpanel ptn-active" role="tabpanel" id="ptn-panel-1" aria-labelledby="ptn-tab-1"
+                    tabindex="-1">
+                    <h3>Dashboard</h3>
+                    <p>Welcome to your main dashboard! This is where you'll find an overview of your key metrics and
+                        recent
+                        activity.</p>
+                    <p>The dashboard provides real-time insights into your system's performance, user engagement, and
+                        important notifications that require your attention.</p>
+                    <p><strong>Current state:</strong> This is the Dashboard panel (Panel 1).</p>
+                    <div style="margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 6px;">
+                        <h4 style="margin-top: 0;">Quick Stats</h4>
+                        <ul>
+                            <li>Total Users: 1,247</li>
+                            <li>Active Sessions: 89</li>
+                            <li>Revenue This Month: $12,450</li>
+                            <li>System Uptime: 99.9%</li>
+                        </ul>
+
+                        <button type="button">Button to show focus order</button>
+                    </div>
+                </div>
+
+                <div class="ptn-vtabpanel" role="tabpanel" id="ptn-panel-2" aria-labelledby="ptn-tab-2" tabindex="-1">
+                    <h3>Analytics</h3>
+                    <p>Deep dive into your analytics data to understand user behavior, traffic patterns, and conversion
+                        metrics.</p>
+                    <p>This section provides comprehensive insights including visitor demographics, page performance,
+                        and
+                        engagement metrics to help you make data-driven decisions.</p>
+                    <p><strong>Current state:</strong> This is the Analytics panel (Panel 2).</p>
+                    <div style="margin-top: 20px; padding: 16px; background: #e8f5e8; border-radius: 6px;">
+                        <h4 style="margin-top: 0;">Traffic Overview</h4>
+                        <ul>
+                            <li>Page Views: 45,231</li>
+                            <li>Unique Visitors: 12,847</li>
+                            <li>Bounce Rate: 32%</li>
+                            <li>Avg. Session Duration: 4m 23s</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="ptn-vtabpanel" role="tabpanel" id="ptn-panel-3" aria-labelledby="ptn-tab-3" tabindex="-1">
+                    <h3>Reports</h3>
+                    <p>Generate and view detailed reports on various aspects of your system including performance, user
+                        activity, and financial metrics.</p>
+                    <p>Access historical data, export reports in multiple formats, and schedule automated report
+                        delivery to
+                        stakeholders.</p>
+                    <p><strong>Current state:</strong> This is the Reports panel (Panel 3).</p>
+                    <div style="margin-top: 20px; padding: 16px; background: #fff4e6; border-radius: 6px;">
+                        <h4 style="margin-top: 0;">Available Reports</h4>
+                        <ul>
+                            <li>Monthly Performance Report</li>
+                            <li>User Engagement Analysis</li>
+                            <li>Revenue & Financial Summary</li>
+                            <li>System Health Check</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="ptn-vtabpanel" role="tabpanel" id="ptn-panel-4" aria-labelledby="ptn-tab-4" tabindex="-1">
+                    <h3>Users</h3>
+                    <p>Manage user accounts, permissions, and access levels. View user activity logs and manage user
+                        groups
+                        and roles.</p>
+                    <p>This comprehensive user management system allows you to maintain security while providing
+                        appropriate
+                        access to team members.</p>
+                    <p><strong>Current state:</strong> This is the Users panel (Panel 4).</p>
+                    <div style="margin-top: 20px; padding: 16px; background: #f0f8ff; border-radius: 6px;">
+                        <h4 style="margin-top: 0;">User Management</h4>
+                        <ul>
+                            <li>Total Registered Users: 1,247</li>
+                            <li>Active Users (30 days): 892</li>
+                            <li>Admin Users: 12</li>
+                            <li>Pending Invitations: 5</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="ptn-vtabpanel" role="tabpanel" id="ptn-panel-5" aria-labelledby="ptn-tab-5" tabindex="-1">
+                    <h3>Settings</h3>
+                    <p>Configure system preferences, update your profile information, and customize the application to
+                        suit
+                        your workflow.</p>
+                    <p>Access advanced configuration options, integration settings, and notification preferences to
+                        optimize
+                        your experience.</p>
+                    <p><strong>Current state:</strong> This is the Settings panel (Panel 5).</p>
+                    <div style="margin-top: 20px; padding: 16px; background: #fdf2f8; border-radius: 6px;">
+                        <h4 style="margin-top: 0;">Configuration Options</h4>
+                        <ul>
+                            <li>General Preferences</li>
+                            <li>Notification Settings</li>
+                            <li>API Configuration</li>
+                            <li>Data Export Options</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="ptn-vtabpanel" role="tabpanel" id="ptn-panel-6" aria-labelledby="ptn-tab-6" tabindex="-1">
+                    <h3>Security</h3>
+                    <p>Monitor security events, configure access policies, and manage authentication settings to keep
+                        your
+                        system secure.</p>
+                    <p>Review security logs, set up two-factor authentication, and configure password policies to
+                        maintain
+                        the highest security standards.</p>
+                    <p><strong>Current state:</strong> This is the Security panel (Panel 6).</p>
+                    <div style="margin-top: 20px; padding: 16px; background: #fef2f2; border-radius: 6px;">
+                        <h4 style="margin-top: 0;">Security Status</h4>
+                        <ul>
+                            <li>2FA Enabled Users: 78%</li>
+                            <li>Failed Login Attempts: 12 (today)</li>
+                            <li>SSL Certificate: Valid until Dec 2025</li>
+                            <li>Last Security Scan: 2 hours ago</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li>Manually activated -- notice that the content doesn't change until you press Enter or Space.</li>
+                <li>How to operate:
+                    <ul>
+                        <li><strong>Arrow keys</strong>: Navigate/browse tabs (focus moves, content stays). Up/down on
+                            desktop, Left/Right on mobile.
+                        </li>
+                        <li><strong>Enter/Space</strong>: Activate the focused tab (changes content)</li>
+                        <li><strong>Home/End</strong>: Jump to first/last tab</li>
+                    </ul>
+                </li>
+                <li>Add JavaScript and CSS to existing code. Adjust panel (content) IDs on the buttons and on each panel
+                    <code>div</code> if adding additional tabs or tab components.
+                </li>
+
+                <li>This example includes some subheadings. If using, adjust the level to fit the structure of the
+                    existing
+                    content. Adjust the css to format. You can also add a subheading and hide it visually using the
+                    included sr-only class if the heading is needed for semantic html. </li>
+                <li>On mobile the tabs convert to a horizontal scrolling pattern, preserving a tab layout. </li>
+                <li>Other features:
+                    <ul>
+                        <li>Touch-friendly mobile interface</li>
+                        <li>High contrast mode support</li>
+                        <li>Reduced motion accessibility</li>
+                    </ul>
+
+                </li>
+
+            </ul>
+
+        </section>
+    </div>
+    <script>
+        class PTNVerticalTabs {
+            constructor(container) {
+                this.container = container;
+                this.tablist = container.querySelector('.ptn-vtablist');
+                this.tabs = Array.from(container.querySelectorAll('.ptn-vtab'));
+                this.panels = Array.from(container.querySelectorAll('.ptn-vtabpanel'));
+
+                // Track which tab is selected (content showing) vs focused (has keyboard focus)
+                this.selectedIndex = 0;
+                this.focusedIndex = 0;
+
+                // Track current orientation for responsive behavior
+                this.currentOrientation = this.getOrientation();
+
+                this.init();
+                this.setupResponsiveListener();
+            }
+
+            init() {
+                // Set up event listeners
+                this.tabs.forEach((tab, index) => {
+                    // Click both focuses and selects
+                    tab.addEventListener('click', () => {
+                        this.setFocus(index);
+                        this.setSelection(index);
+                    });
+
+                    // Keyboard navigation
+                    tab.addEventListener('keydown', (e) => this.handleKeyDown(e));
+                });
+
+                // Initialize: first tab is both focused and selected
+                this.setSelection(0);
+                this.setFocus(0);
+            }
+
+            getOrientation() {
+                // Determine if we're in mobile (horizontal) or desktop (vertical) mode
+                return window.innerWidth <= 768 ? 'horizontal' : 'vertical';
+            }
+
+            setupResponsiveListener() {
+                // Listen for window resize to update ARIA orientation
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        const newOrientation = this.getOrientation();
+                        if (newOrientation !== this.currentOrientation) {
+                            this.currentOrientation = newOrientation;
+                            this.tablist.setAttribute('aria-orientation', newOrientation);
+                        }
+                    }, 100);
+                });
+
+                // Set initial orientation
+                this.tablist.setAttribute('aria-orientation', this.currentOrientation);
+            }
+
+            setSelection(index) {
+                // Change which tab is selected (which content is visible)
+                this.selectedIndex = index;
+
+                // Update ARIA attributes for tabs
+                this.tabs.forEach((tab, i) => {
+                    tab.setAttribute('aria-selected', i === index ? 'true' : 'false');
+                });
+
+                // Update which panel is visible
+                this.panels.forEach((panel, i) => {
+                    if (i === index) {
+                        panel.classList.add('ptn-active');
+                    } else {
+                        panel.classList.remove('ptn-active');
+                    }
+                });
+            }
+
+            setFocus(index) {
+                // Change which tab has keyboard focus (doesn't change content)
+                this.focusedIndex = index;
+
+                // Update tabindex for roving focus
+                this.tabs.forEach((tab, i) => {
+                    tab.setAttribute('tabindex', i === index ? '0' : '-1');
+                });
+
+                // Actually focus the tab
+                this.tabs[index].focus();
+
+                // Scroll into view if needed
+                this.scrollTabIntoView(this.tabs[index]);
+            }
+
+            scrollTabIntoView(tab) {
+                const tablist = this.tablist;
+
+                if (this.currentOrientation === 'vertical') {
+                    // Vertical scrolling for desktop
+                    const tabTop = tab.offsetTop;
+                    const tabBottom = tabTop + tab.offsetHeight;
+                    const listTop = tablist.scrollTop;
+                    const listBottom = listTop + tablist.clientHeight;
+
+                    if (tabTop < listTop) {
+                        tablist.scrollTop = tabTop - 10;
+                    } else if (tabBottom > listBottom) {
+                        tablist.scrollTop = tabBottom - tablist.clientHeight + 10;
+                    }
+                } else {
+                    // Horizontal scrolling for mobile
+                    const tabLeft = tab.offsetLeft;
+                    const tabRight = tabLeft + tab.offsetWidth;
+                    const listLeft = tablist.scrollLeft;
+                    const listRight = listLeft + tablist.clientWidth;
+
+                    if (tabLeft < listLeft) {
+                        tablist.scrollLeft = tabLeft - 10;
+                    } else if (tabRight > listRight) {
+                        tablist.scrollLeft = tabRight - tablist.clientWidth + 10;
+                    }
+                }
+            }
+
+            handleKeyDown(event) {
+                let targetIndex = this.focusedIndex;
+                const isVertical = this.currentOrientation === 'vertical';
+
+                switch (event.key) {
+                    case 'ArrowUp':
+                        if (isVertical) {
+                            event.preventDefault();
+                            targetIndex = this.focusedIndex > 0 ? this.focusedIndex - 1 : this.tabs.length - 1;
+                            this.setFocus(targetIndex);
+                        }
+                        break;
+
+                    case 'ArrowDown':
+                        if (isVertical) {
+                            event.preventDefault();
+                            targetIndex = this.focusedIndex < this.tabs.length - 1 ? this.focusedIndex + 1 : 0;
+                            this.setFocus(targetIndex);
+                        }
+                        break;
+
+                    case 'ArrowLeft':
+                        if (!isVertical) {
+                            event.preventDefault();
+                            targetIndex = this.focusedIndex > 0 ? this.focusedIndex - 1 : this.tabs.length - 1;
+                            this.setFocus(targetIndex);
+                        }
+                        break;
+
+                    case 'ArrowRight':
+                        if (!isVertical) {
+                            event.preventDefault();
+                            targetIndex = this.focusedIndex < this.tabs.length - 1 ? this.focusedIndex + 1 : 0;
+                            this.setFocus(targetIndex);
+                        }
+                        break;
+
+                    case 'Home':
+                        event.preventDefault();
+                        this.setFocus(0);
+                        break;
+
+                    case 'End':
+                        event.preventDefault();
+                        this.setFocus(this.tabs.length - 1);
+                        break;
+
+                    case 'Enter':
+                    case ' ':
+                        event.preventDefault();
+                        // Select the currently focused tab
+                        this.setSelection(this.focusedIndex);
+                        break;
+                }
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabsContainer = document.querySelector('.ptn-vtabs-container');
+            if (tabsContainer) {
+                new PTNVerticalTabs(tabsContainer);
+            }
+        });
+
+        // Helper function for multiple instances
+        function initAllPTNVerticalTabs() {
+            const allTabsContainers = document.querySelectorAll('.ptn-vtabs-container');
+            allTabsContainers.forEach(container => {
+                new PTNVerticalTabs(container);
+            });
+        }
+    </script>
+</body>
+
+</html>
