@@ -29,7 +29,10 @@
             font-weight: 600;
         }
 
-        .cl-list {}
+        .cl-list ul {
+            padding: .5rem 0 .5rem 1rem;
+            margin: 0;
+        }
 
         .cl-list li {
             padding-bottom: .75rem;
@@ -304,7 +307,13 @@
 
         <h2>Content Containers</h2>
         <ul class="cl-list">
-            <li>Disclosure (show/hide a panel of content) </li>
+            <li>Disclosure (show/hide a panel of content)
+                <ul>
+                    <li><a href="components/containers/native-summary-disclosure.html">Native HTML disclosure</a> (no
+                        javascript, for the most basic uses)</li>
+                    <li>Custom ARIA disclosure element </li>
+                </ul>
+            </li>
             <li>Accordions (a collection of disclosure elements)</li>
         </ul>
 

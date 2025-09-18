@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disclosure component using native </title>
+    <style>
+        /* These are just to format the example page; don't copy*/
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: white;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+            padding: .25rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        .disc-example {
+            margin: 1rem 0 2rem;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        /* IMPORTANT: copy css from this point forward */
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --ground: #e8eff3;
+            --mainblue: #2170CA;
+            --accent: #134b8b;
+            --highlight: #0157a8;
+            --radius: 4px;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* format summary */
+        summary {
+            color: var(--mainblue);
+            font-weight: 700;
+        }
+
+        summary:focus,
+        summary:hover {
+            color: var(--accent);
+        }
+
+        summary:focus {
+            outline: 2px dotted #000;
+            outline-offset: 2px;
+        }
+
+        .btn {
+            border: 1px solid var(--mainblue);
+            display: inline-block;
+            padding: .675rem 1.25rem;
+            border-radius: 4px;
+            color: var(--mainblue);
+        }
+
+        .ptn-plain-summary summary {
+            list-style: none;
+            display: inline-block;
+        }
+
+
+        .ptn-custom-summary summary {
+            display: inline;
+            vertical-align: middle;
+        }
+
+        /* Rotate custom SVG arrow when details is open */
+        .ptn-custom-summary[open] summary svg {
+            transform: rotate(90deg);
+            transition: transform 0.2s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .ptn-custom-summary summary svg {
+            transition: transform 0.2s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .ptn-addcontent {
+            border-left: 4px solid #ccc;
+            padding-left: 1rem;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Simple Disclosure component: Native disclosure elements</h1>
+        <p>A disclosure widget is a control whose sole purpose is to hide and disclose (or show) content. It is
+            implemented as a button (trigger) that, when activated, toggles the display of some content (content panel).
+        </p>
+        <p>According to the HTML Standard: </p>
+        <blockquote>The <code>details</code> element represents the disclosure widget container, and the first
+            <code>summary</code> element child will be the disclosure widget's trigger.
+        </blockquote>
+
+        <h2>Below are three examples that use no Javascript to toggle the content.</h2>
+
+        <section class="disc-example">
+
+            <!-- Start of  native disclosure widget code  -->
+            <details>
+                <summary><span>I'm the trigger</span></summary>
+                <!-- disclosure content here; the div is included to give you a hook for styling; you don't need it for the component to work. -->
+                <div class="ptn-dis-content">
+                    <p>This is the content panel, which is toggled by the trigger. Note that by default the browser adds
+                        an
+                        arrow to help communicate the state of the component.
+
+                    </p>
+                    <p>More content</p>
+                </div>
+            </details>
+            <!-- end-->
+
+        </section>
+
+
+        <section class="disc-example">
+
+            <!-- Start of  native disclosure widget code  -->
+            <details class="ptn-plain-summary">
+                <summary><span class="btn">Trigger where the arrow has been suppressed</span></summary>
+                <div class="ptn-dis-content">
+                    <p>For this example we've styled the <code>summary</code> to not have the arrow, and also styled the
+                        summary to look like a button. </p>
+                </div>
+            </details>
+            <!-- end-->
+
+        </section>
+
+        <section class="disc-example">
+
+            <!-- Start of  native disclosure widget code  -->
+            <details class="ptn-custom-summary">
+                <summary>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="vertical-align: middle; margin-right: 4px;" aria-hidden="true">
+                        <path d="M6 4l4 4-4 4" stroke="var(--mainblue)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Custom arrow added - Expand me</span>
+                </summary>
+                <div class="ptn-dis-content ptn-addcontent">
+                    <p>This example has a custom inline arrow, and also has a class added to the content panel to create
+                        the border and alignment.</p>
+                </div>
+            </details>
+            <!-- end-->
+
+        </section>
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li>This can be used for the simplest situations where you need to show/hide information. For example:
+                    hiding the full content of an article, or toggling details. </li>
+                <li>Screen readers do vary slightly in how they read the trigger. It's not a bug, and isn't
+                    something to wrorry about. </li>
+                <li>Like other native HTML controls, the browser bakes keyboard interactions into the
+                    <code>summary</code> element by default. This means that, like a <code>button</code>, it is
+                    operable using both Space and Enter keys.
+                </li>
+                <li>Be sure to provide only ONE <code>Summary</code> element in the component.</li>
+                <li>When you search for content on a page using the browser's “Find in page” search functionality,
+                    Chromium browsers (like Chrome and Edge) will automatically expand the <code>details</code>
+                    panel if it contains your search terms. If this behavior is not desired, use the custom aria
+                    version. </li>
+                <li>If you customize the trigger image, use an inline SVG. Other methods can result in odd readings of
+                    the trigger. Inline SVG is also more flexible in terms of styling, animating, as well as adapting
+                    the icon for Forced Colors Modes like Windows High Contrast Mode. </li>
+                <li>By default, the browser will treat the plain summary as a block element (focus on the first example
+                    above). You can change the display value if desired. </li>
+            </ul>
+
+        </section>
+    </div>
+
+</body>
+
+</html>
