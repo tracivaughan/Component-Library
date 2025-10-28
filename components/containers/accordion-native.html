@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Native Accordion - Using HTML Details & Summary</title>
+    <style>
+        /* Page formatting styles - don't copy */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: white;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: .25rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 2rem 0 1rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .intro {
+            background-color: #f1f5f9;
+            border-left: 4px solid #0066cc;
+            padding: 1rem 1.25rem;
+            margin: 2rem 0;
+        }
+
+        .intro h3 {
+            margin: 0 0 0.5rem 0;
+            color: #0066cc;
+        }
+
+        .quick-start {
+            background: #f8f9fa;
+            border: 2px solid #0066cc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 2rem 0;
+        }
+
+        .quick-start h3 {
+            margin: 0 0 1rem 0;
+            color: #0066cc;
+        }
+
+        .quick-start pre {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h3 {
+            margin: 1.5rem 0 0.5rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .usage-notes ul {
+            margin: 0.5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        .usage-notes code {
+            background: white;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-box {
+            border: 2px solid #dce0e3;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .comparison-box.pro {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .comparison-box.con {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .comparison-box h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .comparison-box.pro h3 {
+            color: #16a34a;
+        }
+
+        .comparison-box.con h3 {
+            color: #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* IMPORTANT: Copy CSS from this point forward */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --ground: #e8eff3;
+            --mainblue: #2170CA;
+            --accent: #134b8b;
+            --radius: 4px;
+        }
+
+        .ptn-native-accordion {
+            margin: 2rem 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .ptn-native-accordion details {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .ptn-native-accordion details:last-child {
+            border-bottom: none;
+        }
+
+        /* Summary (the clickable heading) */
+        .ptn-native-accordion summary {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+            /* Removes default marker in some browsers */
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        /* Remove default marker in all browsers */
+        .ptn-native-accordion summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .ptn-native-accordion summary::marker {
+            content: '';
+        }
+
+        /* Custom arrow icon using CSS */
+        .ptn-native-accordion summary::after {
+            content: '▼';
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.2s;
+            font-size: 0.875rem;
+        }
+
+        /* Rotate arrow when open */
+        .ptn-native-accordion details[open] summary::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* Hover state */
+        .ptn-native-accordion summary:hover {
+            background-color: #ebebeb;
+        }
+
+        /* Focus state */
+        .ptn-native-accordion summary:focus {
+            outline: 2px solid #0066cc;
+            outline-offset: -2px;
+            background-color: #ebebeb;
+        }
+
+        /* Content area */
+        .ptn-native-accordion details>div {
+            padding: 1.5rem;
+            background-color: #ffffff;
+        }
+
+        /* Alternative: Content directly in details (no wrapper div) */
+        .ptn-native-accordion details> :not(summary) {
+            padding: 1.5rem;
+            background-color: #ffffff;
+        }
+
+        /* Optional: Open state styling for summary */
+        .ptn-native-accordion details[open] summary {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        /* Disable transitions for users who prefer reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+
+            .ptn-native-accordion summary,
+            .ptn-native-accordion summary::after {
+                transition: none !important;
+            }
+        }
+
+        /* Variant: Simple style without container */
+        .ptn-native-simple details {
+            margin-bottom: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .ptn-native-simple summary {
+            padding: 0.75rem 1rem;
+            padding-right: 2.5rem;
+            font-weight: 600;
+            background: #f9f9f9;
+            cursor: pointer;
+            list-style: none;
+            position: relative;
+        }
+
+        .ptn-native-simple summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .ptn-native-simple summary::after {
+            content: '+';
+            position: absolute;
+            right: 1rem;
+            font-size: 1.5rem;
+            font-weight: normal;
+            line-height: 1;
+        }
+
+        .ptn-native-simple details[open] summary::after {
+            content: '−';
+        }
+
+        .ptn-native-simple summary:hover {
+            background: #f0f0f0;
+        }
+
+        .ptn-native-simple details> :not(summary) {
+            padding: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Native HTML Accordion - No JavaScript Required</h1>
+
+        <div class="intro">
+            <h3>What is this?</h3>
+            <p>This accordion uses the native HTML <code>&lt;details&gt;</code> and <code>&lt;summary&gt;</code>
+                elements. It requires <strong>no JavaScript</strong> and works even if JavaScript is disabled or
+                fails to load. </p>
+        </div>
+
+        <div class="quick-start">
+            <h3>Quick Start - Copy &amp; Paste This:</h3>
+            <pre><code>&lt;div class="ptn-native-accordion"&gt;
+    &lt;details&gt;
+        &lt;summary&gt;Your Question Here&lt;/summary&gt;
+        &lt;div&gt;
+            &lt;p&gt;Your answer here&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/details&gt;
+&lt;/div&gt;</code></pre>
+            <p>No JavaScript needed. Works immediately.</p>
+        </div>
+
+        <h2>Example 1: Standard FAQ Style</h2>
+        <div class="ptn-native-accordion">
+            <details>
+                <summary>What are details and summary elements?</summary>
+                <div>
+                    <p><code>&lt;details&gt;</code> is a native HTML element that creates a disclosure widget where
+                        information is visible only when toggled. The <code>&lt;summary&gt;</code> element specifies the
+                        visible heading.</p>
+                    <p>These elements have been part of the HTML standard since HTML5 and are supported in all modern
+                        browsers.</p>
+                </div>
+            </details>
+
+            <details open>
+                <summary>What are the advantages of native elements?</summary>
+                <div>
+                    <ul>
+                        <li><strong>No JavaScript required</strong> - Works even if JS fails or is disabled</li>
+                        <li><strong>Built-in accessibility</strong> - Screen readers understand it natively</li>
+                        <li><strong>Semantic HTML</strong> - Clear meaning to browsers and assistive technology</li>
+                        <li><strong>Progressive enhancement</strong> - Core functionality always works</li>
+                        <li><strong>Smaller file size</strong> - No additional JavaScript to download</li>
+                        <li><strong>Better performance</strong> - Browser-native implementation is optimized</li>
+                    </ul>
+                </div>
+            </details>
+
+
+            <details>
+                <summary>Can I use keyboard navigation?</summary>
+                <div>
+                    <p>Some keyboard support is built-in:</p>
+                    <ul>
+                        <li><strong>Tab</strong> - Navigate to the summary element</li>
+                        <li><strong>Enter or Space</strong> - Toggle the details open/closed</li>
+                    </ul>
+                    <p>Arrow keys, Home, and End keys are not supported, because each disclosure element is seen as an
+                        indvidual. Use the <a href=accordion-enhanced.html>ARAI-enhanced accordion</a> if you want full
+                        keyboard support. </p>
+                </div>
+            </details>
+
+            <details>
+                <summary>How do I make one open by default?</summary>
+                <div>
+                    <p>Just add the <code>open</code> attribute to the <code>&lt;details&gt;</code> element:</p>
+                    <pre><code>&lt;details open&gt;
+    &lt;summary&gt;This will be open by default&lt;/summary&gt;
+    &lt;div&gt;Content here&lt;/div&gt;
+&lt;/details&gt;</code></pre>
+                    <p>(Notice this panel was open when you loaded the page!)</p>
+                </div>
+            </details>
+        </div>
+
+        <h2>Example 2: Simple Style (Plus/Minus Icons)</h2>
+        <div class="ptn-native-simple">
+            <details>
+                <summary>What can I customize?</summary>
+                <p>You can customize almost everything with CSS: colors, spacing, fonts, icons, borders, shadows, and
+                    more. </p>
+            </details>
+
+            <details>
+                <summary>Different icon styles</summary>
+                <p>This example uses + and − icons instead of arrows. You can use any character, emoji, or even SVG
+                    icons
+                    with CSS.</p>
+            </details>
+
+            <details>
+                <summary>Works on mobile too</summary>
+                <p>Native <code>&lt;details&gt;</code> elements work perfectly on mobile devices with touch. The browser
+                    handles all the interaction automatically.</p>
+            </details>
+        </div>
+
+        <h2>Comparison: Native vs JavaScript Accordion</h2>
+
+        <div class="comparison">
+            <div class="comparison-box pro">
+                <h3>✅ Native Advantages</h3>
+                <ul>
+                    <li>No dependencies, zero JavaScript </li>
+                    <li>Smaller file size</li>
+                    <li>Better performance</li>
+                    <li>Built-in accessibility</li>
+                    <li>Simpler code</li>
+                    <li>Progressive enhancement</li>
+                </ul>
+            </div>
+
+            <div class="comparison-box con">
+                <h3>❌ Native Limitations</h3>
+                <ul>
+                    <li>No exclusive mode (without JS)</li>
+                    <li>No bulk expand/collapse (without JS)</li>
+                    <li>More limited keyboard navigation</li>
+                    <li>Limited animation control</li>
+                    <li>Browser styling differences</li>
+                    <li>Marker styling quirks</li>
+                    <li>No custom events</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="usage-notes">
+            <h2>Usage Guide</h2>
+
+            <h3>Basic HTML Structure</h3>
+            <pre><code>&lt;details&gt;
+    &lt;summary&gt;Visible heading&lt;/summary&gt;
+    Hidden content goes here
+&lt;/details&gt;</code></pre>
+
+            <h3>With Wrapper Div (Recommended)</h3>
+            <pre><code>&lt;details&gt;
+    &lt;summary&gt;Question&lt;/summary&gt;
+    &lt;div&gt;
+        &lt;p&gt;Answer with proper padding&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/details&gt;</code></pre>
+            <p>Using a wrapper <code>&lt;div&gt;</code> makes padding and styling more predictable.</p>
+
+            <h3>Open by Default</h3>
+            <pre><code>&lt;details open&gt;
+    &lt;summary&gt;This starts open&lt;/summary&gt;
+    &lt;div&gt;Content&lt;/div&gt;
+&lt;/details&gt;</code></pre>
+
+            <h3>Styling Classes</h3>
+            <ul>
+                <li><code>.ptn-native-accordion</code> - Standard bordered container style with arrows</li>
+                <li><code>.ptn-native-simple</code> - Simple style with plus/minus icons</li>
+            </ul>
+
+            <h3>Key CSS Techniques</h3>
+            <ul>
+                <li><strong>Remove default marker:</strong> Use <code>list-style: none</code> and target
+                    <code>::-webkit-details-marker</code> and <code>::marker</code>
+                </li>
+                <li><strong>Add custom icon:</strong> Use <code>summary::after</code> with positioned content</li>
+                <li><strong>Animate icon:</strong> Apply CSS transitions to <code>summary::after</code></li>
+                <li><strong>Style open state:</strong> Use <code>details[open]</code> selector</li>
+            </ul>
+
+            <h3>Accessibility Features (Built-in)</h3>
+            <ul>
+                <li>Keyboard accessible (Tab, Enter, Space)</li>
+                <li>Screen reader announces expanded/collapsed state</li>
+                <li>Semantic HTML - assistive tech understands the structure</li>
+                <li>Focus management handled by browser</li>
+                <li>No ARIA attributes needed</li>
+            </ul>
+
+
+
+
+            <h3>Common Gotchas</h3>
+            <ul>
+                <li><strong>Marker removal:</strong> You need both <code>::marker</code> and
+                    <code>::-webkit-details-marker</code> to hide the default triangle in all browsers
+                </li>
+                <li><strong>Content wrapping:</strong> Use a wrapper div inside details for better padding control</li>
+                <li><strong>Smooth animations:</strong> Native details doesn't support smooth open/close animations
+                    easily (requires JavaScript or newer CSS features)</li>
+                <li><strong>Exclusive mode:</strong> Multiple details can be open simultaneously - need JS to make them
+                    exclusive</li>
+            </ul>
+
+
+            <h3>Combining with JavaScript (Optional Enhancement)</h3>
+            <p>You can enhance native details with JavaScript for additional features while maintaining the no-JS
+                fallback:</p>
+            <pre><code>// Optional: Add exclusive mode with JS
+document.querySelectorAll('details').forEach(detail => {
+    detail.addEventListener('toggle', () => {
+        if (detail.open) {
+            // Close other details in the same container
+            const container = detail.parentElement;
+            container.querySelectorAll('details[open]').forEach(other => {
+                if (other !== detail) other.open = false;
+            });
+        }
+    });
+});</code></pre>
+        </div>
+
+    </div>
+</body>
+
+</html>

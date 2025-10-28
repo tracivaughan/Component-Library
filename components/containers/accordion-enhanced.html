@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced ARIA Accordion - Component Library Version</title>
+    <style>
+        /* These are just to format the example page; don't copy. Scroll down for needed classes*/
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: white;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+            padding: .25rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        .quick-start {
+            background: #f8f9fa;
+            border: 2px solid #0066cc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 2rem 0;
+        }
+
+        .quick-start h3 {
+            margin: 0 0 1rem 0;
+            color: #0066cc;
+        }
+
+        .quick-start pre {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        /* IMPORTANT: copy css from this point forward */
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --ground: #e8eff3;
+            --mainblue: #2170CA;
+            --accent: #134b8b;
+            --highlight: #0157a8;
+            --radius: 4px;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .ptn-accordion {
+            margin: 2rem auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .ptn-accordion-item {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .ptn-accordion-item h3 {
+            margin: 0;
+        }
+
+        .ptn-accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Button styling */
+        .ptn-accordion-trigger {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            background-color: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+            font-family: inherit;
+        }
+
+        .ptn-accordion-trigger:hover {
+            background-color: #ebebeb;
+        }
+
+        .ptn-accordion-trigger:focus {
+            outline: 2px solid #0066cc;
+            outline-offset: -2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Icon styling */
+        .ptn-accordion-icon {
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+            margin-left: 1rem;
+            line-height: 1;
+        }
+
+        .ptn-accordion-trigger[aria-expanded="true"] .ptn-accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Panel styling */
+        .ptn-accordion-panel {
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Hidden state - using until-found */
+        .ptn-accordion-panel[hidden="until-found"] {
+            content-visibility: hidden;
+        }
+
+        .ptn-accordion-content {
+            padding: 1.5rem;
+        }
+
+        /* Auto-generated controls styling */
+        .ptn-accordion-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .ptn-accordion-controls button {
+            padding: 0.5rem 1rem;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .ptn-accordion-controls button:hover {
+            background-color: #e5e5e5;
+        }
+
+        .ptn-accordion-controls button:focus {
+            outline: 2px solid #0066cc;
+            outline-offset: 2px;
+        }
+
+        /* Disable animation for users who prefer reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+
+            .ptn-accordion-trigger,
+            .ptn-accordion-icon,
+            .ptn-accordion-controls button {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Enhanced ARIA Accordion </h1>
+
+        <div class="quick-start">
+            <h2>Quick Start - Copy & Paste This:</h2>
+            <pre><code>&lt;div class="ptn-accordion" data-accordion data-auto-controls&gt;
+    &lt;div class="ptn-accordion-item"&gt;
+        &lt;h3&gt;
+            &lt;button class="ptn-accordion-trigger"&gt;
+                Your Question Here
+                &lt;span class="ptn-accordion-icon"&gt;▼&lt;/span&gt;
+            &lt;/button&gt;
+        &lt;/h3&gt;
+        &lt;div class="ptn-accordion-panel"&gt;
+            &lt;div class="ptn-accordion-content"&gt;
+                &lt;p&gt;Your answer here&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+            <p><strong>That's it.</strong> The JavaScript handles everything automatically.</p>
+        </div>
+
+        <h2>Example 1: With Auto-Generated Controls</h2>
+        <div class="ptn-accordion" data-accordion data-auto-controls id="accordion-1">
+            <div class="ptn-accordion-item">
+                <h3>
+                    <button class="ptn-accordion-trigger">
+                        What is an accordion component?
+                        <span class="ptn-accordion-icon">▼</span>
+                    </button>
+                </h3>
+                <div class="ptn-accordion-panel">
+                    <div class="ptn-accordion-content">
+                        <p>An accordion is a vertically stacked list of items where each item can be expanded or
+                            collapsed
+                            to reveal more content. It's perfect for FAQs, documentation, and organizing large amounts
+                            of
+                            information.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ptn-accordion-item" data-expanded="true">
+                <h3>
+                    <button class="ptn-accordion-trigger">
+                        How do I use this accordion?
+                        <span class="ptn-accordion-icon">▼</span>
+                    </button>
+                </h3>
+                <div class="ptn-accordion-panel">
+                    <div class="ptn-accordion-content">
+                        <p>Simply copy the HTML structure and paste it into your page. The JavaScript automatically
+                            initializes all accordions when the page loads. No configuration needed!</p>
+                        <p><strong>Tip:</strong> Add <code>data-expanded="true"</code> to any item to have it open by
+                            default (like this one).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ptn-accordion-item">
+                <h3>
+                    <button class="ptn-accordion-trigger">
+                        What keyboard controls are supported?
+                        <span class="ptn-accordion-icon">▼</span>
+                    </button>
+                </h3>
+                <div class="ptn-accordion-panel">
+                    <div class="ptn-accordion-content">
+                        <ul>
+                            <li><strong>Enter/Space:</strong> Toggle panel open/closed</li>
+                            <li><strong>Arrow Down:</strong> Move to next button</li>
+                            <li><strong>Arrow Up:</strong> Move to previous button</li>
+                            <li><strong>Home:</strong> Jump to first button</li>
+                            <li><strong>End:</strong> Jump to last button</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ptn-accordion-item">
+                <h3>
+                    <button class="ptn-accordion-trigger">
+                        Is this accessible?
+                        <span class="ptn-accordion-icon">▼</span>
+                    </button>
+                </h3>
+                <div class="ptn-accordion-panel">
+                    <div class="ptn-accordion-content">
+                        <p>Yes. This accordion follows WAI-ARIA best practices and includes:</p>
+                        <ul>
+                            <li>Proper ARIA attributes (aria-expanded, aria-controls, aria-labelledby)</li>
+                            <li>Full keyboard navigation</li>
+                            <li>Screen reader support</li>
+                            <li>Find-in-page support with <code>hidden="until-found"</code></li>
+                            <li>Reduced motion support</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ptn-accordion-item">
+                <h3>
+                    <button class="ptn-accordion-trigger">
+                        What is hidden="until-found"?
+                        <span class="ptn-accordion-icon">▼</span>
+                    </button>
+                </h3>
+                <div class="ptn-accordion-panel">
+                    <div class="ptn-accordion-content">
+                        <p>The <code>hidden="until-found"</code> attribute is a new HTML feature that makes hidden
+                            content searchable via the browser's find-in-page function (Ctrl/Cmd+F).</p>
+                        <p>When you search for text within hidden content:</p>
+                        <ul>
+                            <li>The browser automatically reveals the content</li>
+                            <li>A <code>beforematch</code> event fires, letting you update your UI</li>
+                            <li>The search term is highlighted as expected</li>
+                        </ul>
+                        <p>This is perfect for accordions, tabs, and other collapsed content.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <h2>Example 2: Exclusive Mode (Only One Panel Open at a Time)</h2>
+        <p>This accordion uses <code>data-exclusive</code> to ensure only one panel can be open at a time - perfect for
+            FAQs where you want users to focus on one answer.</p>
+
+        <div class="ptn-accordion" data-accordion data-exclusive id="accordion-2">
+            <div class="ptn-accordion-item">
+                <h3>
+                    <button class="ptn-accordion-trigger">
+                        What is exclusive mode?
+                        <span class="ptn-accordion-icon">▼</span>
+                    </button>
+                </h3>
+                <div class="ptn-accordion-panel">
+                    <div class="ptn-accordion-content">
+                        <p>In exclusive mode, when you open a panel, any other open panel automatically closes. This
+                            ensures only one panel is visible at a time, reducing visual clutter and helping users focus
+                            on one piece of information.</p>
+                        <p>Try opening another panel below - this one will automatically close!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ptn-accordion-item">
+                <h3>
+                    <button class="ptn-accordion-trigger">
+                        When should I use exclusive mode?
+                        <span class="ptn-accordion-icon">▼</span>
+                    </button>
+                </h3>
+                <div class="ptn-accordion-panel">
+                    <div class="ptn-accordion-content">
+                        <p>Exclusive mode is ideal for:</p>
+                        <ul>
+                            <li><strong>FAQs</strong> - Users typically read one answer at a time</li>
+                            <li><strong>Long content</strong> - Prevents the page from getting too long</li>
+                            <li><strong>Mobile interfaces</strong> - Saves screen space</li>
+                            <li><strong>Step-by-step instructions</strong> - Guides users through one step at a time
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ptn-accordion-item">
+                <h3>
+                    <button class="ptn-accordion-trigger">
+                        How do I enable it?
+                        <span class="ptn-accordion-icon">▼</span>
+                    </button>
+                </h3>
+                <div class="ptn-accordion-panel">
+                    <div class="ptn-accordion-content">
+                        <p>Just add the <code>data-exclusive</code> attribute to your accordion container:</p>
+                        <pre><code>&lt;div class="ptn-accordion" data-accordion data-exclusive&gt;
+    &lt;!-- items --&gt;
+&lt;/div&gt;</code></pre>
+                        <p>That's it! No other changes needed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ptn-accordion-item">
+                <h3>
+                    <button class="ptn-accordion-trigger">
+                        Can users still collapse all panels?
+                        <span class="ptn-accordion-icon">▼</span>
+                    </button>
+                </h3>
+                <div class="ptn-accordion-panel">
+                    <div class="ptn-accordion-content">
+                        <p>Yes! Users can click the open panel to collapse it, leaving all panels closed. Exclusive mode
+                            only prevents <em>multiple</em> panels from being open simultaneously - it doesn't force one
+                            to always be open.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="usage-notes">
+            <h2>Usage Notes</h2>
+
+            <h3>Attributes:</h3>
+            <ul>
+                <li><code>data-accordion</code> - <strong>Required</strong> on the accordion container. Tells the script
+                    to initialize this
+                    accordion.</li>
+                <li><code>data-auto-controls</code> - <strong>Optional.</strong> Automatically generates "Expand All"
+                    and "Collapse All"
+                    buttons above the accordion.</li>
+                <li><code>data-exclusive</code> - <strong>Optional.</strong> Enables exclusive mode where only one panel
+                    can be open at a time. When a user opens a panel, any other open panel automatically closes.</li>
+                <li><code>data-expanded="true"</code> - <strong>Optional</strong> on any
+                    <code>.ptn-accordion-item</code>. Makes that item
+                    open by default when the page loads.
+                </li>
+                <li><code>id</code> - <strong>Optional</strong> on accordion container. Used to create unique IDs for
+                    ARIA attributes. Auto-generated if not provided.</li>
+            </ul>
+
+            <h3>Common Combinations:</h3>
+            <ul>
+                <li><strong>Standard FAQ:</strong> <code>data-accordion data-auto-controls</code> - Multiple panels can
+                    be open, with expand/collapse all buttons</li>
+                <li><strong>Exclusive FAQ:</strong> <code>data-accordion data-exclusive</code> - Only one panel open at
+                    a time, no controls needed</li>
+                <li><strong>Simple accordion:</strong> <code>data-accordion</code> - Just the basic functionality, no
+                    frills</li>
+            </ul>
+
+            <h3>What the JavaScript Automatically Adds:</h3>
+            <ul>
+                <li>Unique IDs for each trigger and panel (e.g., <code>accordion-1-trigger-0</code>,
+                    <code>accordion-1-panel-0</code>)
+                </li>
+                <li><code>aria-controls</code> on triggers linking to their panels</li>
+                <li><code>aria-labelledby</code> on panels linking to their triggers</li>
+                <li><code>aria-expanded</code> attributes that update on toggle</li>
+                <li><code>role="region"</code> on panels</li>
+                <li><code>hidden="until-found"</code> on collapsed panels (enables find-in-page)</li>
+                <li>All event listeners (click, keyboard, beforematch)</li>
+                <li>Console logs for debugging (check your browser console!)</li>
+            </ul>
+
+            <h3>Troubleshooting:</h3>
+            <ul>
+                <li><strong>Not working?</strong> Open your browser console (F12) - you'll see helpful messages</li>
+                <li><strong>Items not collapsing?</strong> Make sure each item has both
+                    <code>.ptn-accordion-trigger</code>
+                    and <code>.ptn-accordion-panel</code>
+                </li>
+                <li><strong>Keyboard not working?</strong> Make sure you're focused on the accordion buttons (Tab to
+                    them
+                    first)</li>
+                <li><strong>Find-in-page not working?</strong> Some browsers don't support
+                    <code>hidden="until-found"</code> yet. But Chromium-based browsers will benefit from this addition.
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Enhanced ARIA Accordion Component
+         * Features:
+         * - Auto-initialization via data-accordion attribute
+         * - Optional auto-generated expand/collapse controls
+         * - Full keyboard navigation (arrows, Home, End, Enter, Space)
+         * - Find-in-page support with hidden="until-found"
+         * - WCAG 2.1 compliant
+         * - Console logging for debugging
+         * 
+         * @example
+         * <!-- Basic usage -->
+         * <div class="ptn-accordion" data-accordion>
+            *   <div class="ptn-accordion-item">
+                *     <h3>
+                    *       <button class="ptn-accordion-trigger">
+                        *         Question
+                        *         <span class="ptn-accordion-icon">▼</span>
+                        *       </button>
+                    *     </h3>
+                *     <div class="ptn-accordion-panel">
+                    *       <div class="ptn-accordion-content">
+                        *         <p>Answer</p>
+                        *       </div>
+                    *     </div>
+                *   </div>
+            * </div>
+            */
+                (function () {
+                    'use strict';
+
+                    class Accordion {
+                        /**
+                         * Creates an Accordion instance
+                         * @param {HTMLElement} el - The accordion container element
+                         */
+                        constructor(el) {
+                            this.accordion = el;
+                            this.accordionId = el.id || `accordion-${Math.random().toString(36).substr(2, 9)}`;
+                            this.items = Array.from(this.accordion.querySelectorAll('.ptn-accordion-item'));
+                            this.autoControls = el.hasAttribute('data-auto-controls');
+                            this.exclusive = el.hasAttribute('data-exclusive');
+
+                            this.init();
+                        }
+
+                        /**
+                         * Initialize the accordion
+                         * Sets up ARIA attributes, event listeners, and optional controls
+                         */
+                        init() {
+                            // Validation
+                            if (this.items.length === 0) {
+                                console.warn(`⚠️ No accordion items found in #${this.accordionId}. Make sure elements have class "ptn-accordion-item"`);
+                                return;
+                            }
+
+                            console.log(`✅ Accordion #${this.accordionId} initialized with ${this.items.length} items`);
+
+                            // Create auto-controls if requested
+                            if (this.autoControls) {
+                                this.createAutoControls();
+                                console.log(`   ↳ Auto-controls enabled for #${this.accordionId}`);
+                            }
+
+                            // Log exclusive mode
+                            if (this.exclusive) {
+                                console.log(`   ↳ Exclusive mode: only one panel can be open at a time`);
+                            }
+
+                            // Setup each accordion item
+                            this.items.forEach((item, index) => {
+                                const trigger = item.querySelector('.ptn-accordion-trigger');
+                                const panel = item.querySelector('.ptn-accordion-panel');
+
+                                if (!trigger) {
+                                    console.warn(`⚠️ Item ${index} missing .ptn-accordion-trigger button`);
+                                    return;
+                                }
+
+                                if (!panel) {
+                                    console.warn(`⚠️ Item ${index} missing .ptn-accordion-panel`);
+                                    return;
+                                }
+
+                                // Generate unique IDs
+                                const triggerId = `${this.accordionId}-trigger-${index}`;
+                                const panelId = `${this.accordionId}-panel-${index}`;
+
+                                // Set IDs
+                                trigger.id = triggerId;
+                                panel.id = panelId;
+
+                                // Set ARIA attributes
+                                trigger.setAttribute('aria-controls', panelId);
+                                panel.setAttribute('role', 'region');
+                                panel.setAttribute('aria-labelledby', triggerId);
+
+                                // Check if this item should be expanded by default
+                                const isExpanded = item.hasAttribute('data-expanded') &&
+                                    item.getAttribute('data-expanded') === 'true';
+
+                                if (isExpanded) {
+                                    trigger.setAttribute('aria-expanded', 'true');
+                                    panel.removeAttribute('hidden');
+                                    console.log(`   ↳ Item ${index} open by default`);
+                                } else {
+                                    trigger.setAttribute('aria-expanded', 'false');
+                                    panel.setAttribute('hidden', 'until-found');
+                                }
+
+                                // Add click handler
+                                trigger.addEventListener('click', () => this.toggle(trigger, panel));
+
+                                // Add beforematch handler for find-in-page
+                                panel.addEventListener('beforematch', () => this.handleBeforeMatch(trigger, panel));
+                            });
+
+                            // Add keyboard navigation to the accordion container
+                            this.accordion.addEventListener('keydown', (e) => this.handleKeyboard(e));
+
+                            console.log(`   ↳ All event listeners attached`);
+                        }
+
+                        /**
+                         * Create expand/collapse all controls
+                         * Automatically generates buttons and inserts them before the accordion
+                         */
+                        createAutoControls() {
+                            const controlsWrapper = document.createElement('div');
+                            controlsWrapper.className = 'ptn-accordion-controls';
+
+                            const expandBtn = document.createElement('button');
+                            expandBtn.textContent = 'Expand All';
+                            expandBtn.setAttribute('type', 'button');
+                            expandBtn.setAttribute('aria-label', `Expand all items in ${this.accordionId}`);
+
+                            const collapseBtn = document.createElement('button');
+                            collapseBtn.textContent = 'Collapse All';
+                            collapseBtn.setAttribute('type', 'button');
+                            collapseBtn.setAttribute('aria-label', `Collapse all items in ${this.accordionId}`);
+
+                            controlsWrapper.appendChild(expandBtn);
+                            controlsWrapper.appendChild(collapseBtn);
+
+                            // Insert before accordion
+                            this.accordion.parentNode.insertBefore(controlsWrapper, this.accordion);
+
+                            // Add event listeners
+                            expandBtn.addEventListener('click', () => {
+                                this.expandAll();
+                                console.log(`📂 All items expanded in #${this.accordionId}`);
+                            });
+
+                            collapseBtn.addEventListener('click', () => {
+                                this.collapseAll();
+                                console.log(`📁 All items collapsed in #${this.accordionId}`);
+                            });
+                        }
+
+                        /**
+                         * Toggle an accordion panel
+                         * @param {HTMLElement} trigger - The button that was clicked
+                         * @param {HTMLElement} panel - The panel to toggle
+                         */
+                        toggle(trigger, panel) {
+                            const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+
+                            if (isExpanded) {
+                                // Collapse
+                                trigger.setAttribute('aria-expanded', 'false');
+                                panel.setAttribute('hidden', 'until-found');
+                            } else {
+                                // If in exclusive mode, close all other panels first
+                                if (this.exclusive) {
+                                    this.items.forEach((item) => {
+                                        const itemTrigger = item.querySelector('.ptn-accordion-trigger');
+                                        const itemPanel = item.querySelector('.ptn-accordion-panel');
+
+                                        if (itemTrigger && itemPanel) {
+                                            itemTrigger.setAttribute('aria-expanded', 'false');
+                                            itemPanel.setAttribute('hidden', 'until-found');
+                                        }
+                                    });
+                                }
+
+                                // Expand this panel
+                                trigger.setAttribute('aria-expanded', 'true');
+                                panel.removeAttribute('hidden');
+                            }
+                        }
+
+                        /**
+                         * Handle find-in-page revealing hidden content
+                         * @param {HTMLElement} trigger - The associated trigger button
+                         * @param {HTMLElement} panel - The panel that was revealed
+                         */
+                        handleBeforeMatch(trigger, panel) {
+                            trigger.setAttribute('aria-expanded', 'true');
+                            panel.removeAttribute('hidden');
+                            console.log(`🔍 Panel revealed by find-in-page: ${panel.id}`);
+                        }
+
+                        /**
+                         * Handle keyboard navigation
+                         * @param {KeyboardEvent} e - The keyboard event
+                         */
+                        handleKeyboard(e) {
+                            const trigger = e.target;
+                            if (!trigger.classList.contains('ptn-accordion-trigger')) return;
+
+                            const triggers = Array.from(this.accordion.querySelectorAll('.ptn-accordion-trigger'));
+                            const index = triggers.indexOf(trigger);
+                            let newIndex;
+
+                            switch (e.key) {
+                                case 'ArrowDown':
+                                    e.preventDefault();
+                                    newIndex = (index + 1) % triggers.length;
+                                    triggers[newIndex].focus();
+                                    break;
+
+                                case 'ArrowUp':
+                                    e.preventDefault();
+                                    newIndex = (index - 1 + triggers.length) % triggers.length;
+                                    triggers[newIndex].focus();
+                                    break;
+
+                                case 'Home':
+                                    e.preventDefault();
+                                    triggers[0].focus();
+                                    break;
+
+                                case 'End':
+                                    e.preventDefault();
+                                    triggers[triggers.length - 1].focus();
+                                    break;
+
+                                case 'Enter':
+                                case ' ':
+                                    e.preventDefault();
+                                    const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+                                    this.toggle(trigger, panel);
+                                    break;
+                            }
+                        }
+
+                        /**
+                         * Expand all accordion items
+                         */
+                        expandAll() {
+                            this.items.forEach((item) => {
+                                const trigger = item.querySelector('.ptn-accordion-trigger');
+                                const panel = item.querySelector('.ptn-accordion-panel');
+
+                                if (trigger && panel) {
+                                    trigger.setAttribute('aria-expanded', 'true');
+                                    panel.removeAttribute('hidden');
+                                }
+                            });
+                        }
+
+                        /**
+                         * Collapse all accordion items
+                         */
+                        collapseAll() {
+                            this.items.forEach((item) => {
+                                const trigger = item.querySelector('.ptn-accordion-trigger');
+                                const panel = item.querySelector('.ptn-accordion-panel');
+
+                                if (trigger && panel) {
+                                    trigger.setAttribute('aria-expanded', 'false');
+                                    panel.setAttribute('hidden', 'until-found');
+                                }
+                            });
+                        }
+                    }
+
+                    /**
+                     * Initialize all accordions on the page
+                     * @returns {Map} Map of accordion elements to their instances
+                     */
+                    function initAccordions() {
+                        const accordions = document.querySelectorAll('[data-accordion]');
+                        const instances = new Map();
+
+                        if (accordions.length === 0) {
+                            console.log('ℹ️ No accordions found on page (looking for data-accordion attribute)');
+                            return instances;
+                        }
+
+                        console.log(`🎨 Found ${accordions.length} accordion(s) to initialize`);
+
+                        accordions.forEach((el) => {
+                            try {
+                                const accordion = new Accordion(el);
+                                instances.set(el, accordion);
+                            } catch (error) {
+                                console.error(`❌ Error initializing accordion:`, error);
+                            }
+                        });
+
+                        console.log(`✨ All accordions ready!`);
+
+                        return instances;
+                    }
+
+                    // Initialize on DOMContentLoaded or immediately if already loaded
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', initAccordions);
+                    } else {
+                        initAccordions();
+                    }
+                })();
+    </script>
+</body>
+
+</html>

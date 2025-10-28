@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switch element for preferences</title>
+    <style>
+        /* These are just to format the example page; don't copy. Scroll below for needed css*/
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: white;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+            padding: .25rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        .disc-example {
+            margin: 1rem 0 2rem;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        /* IMPORTANT: copy css from this point forward */
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --ground: #e8eff3;
+            --mainblue: #2170CA;
+            --accent: #134b8b;
+            --highlight: #0157a8;
+            --gray600: #070708;
+            --radius: 4px;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --error-dark: #AD0024;
+            --error: #E0002F;
+        }
+
+
+        .setting-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .setting-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: start;
+            padding: 16px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+
+        .ptn-switch-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            min-width: 120px;
+        }
+
+        .ptn-switch-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ptn-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .ptn-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 28px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            top: 4px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked+.slider {
+            background-color: var(--mainblue);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        input:focus+.slider {
+            outline: 2px dotted black;
+            outline-offset: 2px;
+        }
+
+        .switch-label {
+            font-size: 0.9rem;
+            color: #495057;
+            font-weight: 500;
+            min-width: 30px;
+        }
+
+        .save-status {
+            font-size: 0.8rem;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            color: #6c757d;
+        }
+
+        .save-status.saving {
+            color: var(--gray600);
+        }
+
+        .save-status.saved {
+            color: #1E7B34;
+        }
+
+        .save-status.error {
+            color: var(--error-dark);
+        }
+
+        .status-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .saving .status-icon {
+            background: #6c757d;
+            animation: pulse 1.5s infinite;
+        }
+
+        .saved .status-icon {
+            background: #1E7B34;
+        }
+
+        .error .status-icon {
+            background: var(--error);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .setting-item {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .ptn-switch-container {
+                align-items: flex-start;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .slider,
+            .slider:before {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Switch element with feedback (for preferences, controls, etc.)</h1>
+
+        <section class="disc-example">
+            <h2>Turn on email notifications</h2>
+            <!-- Start of  switch example code  -->
+
+            <ul class="setting-list" role="list">
+                <li class="setting-item">
+                    <div class="department-info">
+                        <div class="department-name">Department of Biology [1-444321]</div>
+
+                    </div>
+                    <div class="ptn-switch-container">
+                        <div class="ptn-switch-row">
+                            <label class="ptn-switch" for="biology-notifications">
+                                <input type="checkbox" id="biology-notifications" data-setting-id="biology"
+                                    aria-describedby="biology-desc">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="switch-label">Off</span>
+                        </div>
+                        <div class="save-status" aria-live="polite"></div>
+                        <div id="biology-desc" class="sr-only">
+                            Email notifications for Department of Biology assignments
+                        </div>
+                    </div>
+                </li>
+                <li class="setting-item">
+                    <div class="department-info">
+                        <div class="department-name">Department of Whatever2 [1-500000]</div>
+
+                    </div>
+                    <div class="ptn-switch-container">
+                        <div class="ptn-switch-row">
+                            <label class="ptn-switch" for="whatever2-notifications">
+                                <input type="checkbox" id="whatever2-notifications" data-setting-id="whatever2"
+                                    aria-describedby="whatever2-desc">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="switch-label">Off</span>
+                        </div>
+                        <div class="save-status" aria-live="polite"></div>
+                        <div id="whatever2-desc" class="sr-only">
+                            Email notifications for Department of Whatever assignments
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <!-- end-->
+
+        </section>
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li>A switch element is a binary control that allows users to toggle between two mutually exclusive
+                    states,
+                    typically "on" and "off." Structurally they are styled checkboxes, but switches convey more
+                    immediacy and
+                    are better for settings that take effect instantly. Checkboxes are typically better for selections
+                    <strong>within forms</strong> that require submission or for multiple related options.
+                </li>
+                <li>This example includes Javascript to announce the change in status of the switch.</li>
+                <li>Important: Replace the mockSave() function with your actual API call or save logic.</li>
+                <li>Be sure to update the visually-hidden text that defines the meaning of the switch; remember to make
+                    each of these labels unique.</li>
+                <li>Don't use this version for forms that require submission. IF a switch is appropriate, use a version
+                    without the immediate confirmation/status. </li>
+                <li>Animation automatically eliminated for users with reduced motion settings. </li>
+            </ul>
+
+        </section>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Simple mock save function
+            function mockSave() {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        Math.random() > 0.1 ? resolve() : reject();
+                    }, 800);
+                });
+            }
+
+            // Setup each switch
+            document.querySelectorAll('.ptn-switch input').forEach(input => {
+                const container = input.closest('.ptn-switch-container');
+                const label = container.querySelector('.switch-label');
+                const status = container.querySelector('.save-status');
+
+                // Update label text
+                function updateLabel() {
+                    const isChecked = input.checked;
+                    label.textContent = isChecked ? 'On' : 'Off';
+                }
+
+                // Show save status
+                function showStatus(type, text) {
+                    status.className = `save-status ${type}`;
+                    status.innerHTML = type ? `<span class="status-icon"></span><span>${text}</span>` : '';
+
+                    if (type === 'saved') {
+                        setTimeout(() => showStatus('', ''), 3000);
+                    }
+                }
+
+                // Handle save
+                async function handleSave() {
+                    showStatus('saving', 'Saving...');
+                    try {
+                        // In a real implementation, you might use data attributes like this:
+                        // const settingId = input.dataset.settingId;
+                        // await saveSetting(settingId, input.checked);
+                        await mockSave();
+                        showStatus('saved', 'Saved');
+                    } catch {
+                        input.checked = !input.checked; // Revert
+                        updateLabel();
+                        showStatus('error', 'Save failed');
+                    }
+                }
+
+                // Initialize
+                updateLabel();
+
+                // Listen for changes
+                input.addEventListener('change', () => {
+                    updateLabel();
+                    handleSave();
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

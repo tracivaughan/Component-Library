@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tooltip</title>
+    <style>
+        /* These are just to format the example page; don't copy. Scroll below for needed css*/
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background-color: white;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+            padding: .25rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 0;
+            padding: 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .usage-notes {
+            margin: 4rem 0 1.25rem 0;
+            border: 2px solid #dce0e3;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: .75rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .usage-notes ul ul {
+            margin: .5rem 0;
+        }
+
+        .usage-notes li {
+            margin-bottom: .5rem;
+        }
+
+        a:link {
+            color: #2170CA;
+        }
+
+        a:visited {
+            color: rgb(52, 25, 93)
+        }
+
+        a:hover,
+        a:focus {
+            color: #134b8b;
+        }
+
+        a:focus {
+            outline: 2px dotted var(--dark-text);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        .disc-example {
+            margin: 1rem 0 2rem;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+
+        .demo-section {
+            margin-bottom: 40px;
+        }
+
+        .demo-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .demo-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .code-example {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+
+
+        /* IMPORTANT: copy css from this point forward */
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 0;
+            clip-path: inset(50%);
+        }
+
+        :root {
+            --dark-text: #2c3e50;
+            --border: #9ca3af;
+            --border-light: #e9ecef;
+            --ground: #e8eff3;
+            --mainblue: #2170CA;
+            --accent: #134b8b;
+            --highlight: #0157a8;
+            --gray600: #070708;
+            --radius: 4px;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --error-dark: #AD0024;
+            --error: #E0002F;
+            --warning: #d97706;
+            --success: #147d2d;
+            --info: #2170CA;
+            --neutral: #5b5b5b;
+        }
+
+
+        /* Tooltip Container */
+        .ptn-tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Tooltip Trigger Button */
+        .ptn-tooltip-trigger {
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .ptn-tooltip-trigger:hover,
+        .ptn-tooltip-trigger:focus {
+            background-color: rgba(0, 0, 0, 0.05);
+            outline: none;
+        }
+
+        .ptn-tooltip-trigger:focus-visible {
+            outline: 2px dotted var(--gray600);
+            outline-offset: 2px;
+        }
+
+        .ptn-tooltip-trigger svg {
+            display: block;
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Tooltip Content */
+        .ptn-tooltip-content {
+            position: absolute;
+            z-index: 1000;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.4;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            word-break: break-word;
+            white-space: normal;
+            min-width: 180px;
+            max-width: 500px;
+            /* or your preferred values for widths */
+            overflow-wrap: break-word;
+        }
+
+        .ptn-tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }
+
+        /* Positioning variants */
+        .ptn-tooltip-container[data-position="top"] .ptn-tooltip-content {
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .ptn-tooltip-container[data-position="bottom"] .ptn-tooltip-content {
+            top: calc(100% + 10px);
+            bottom: auto;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .ptn-tooltip-container[data-position="bottom"] .ptn-tooltip-content::after {
+            top: -12px;
+            border-top-color: transparent;
+            border-bottom-color: #333;
+        }
+
+        .ptn-tooltip-container[data-position="left"] .ptn-tooltip-content {
+            bottom: auto;
+            top: 50%;
+            right: calc(100% + 10px);
+            left: auto;
+            transform: translateY(-50%);
+        }
+
+        .ptn-tooltip-container[data-position="left"] .ptn-tooltip-content::after {
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            border-top-color: transparent;
+            border-left-color: #333;
+        }
+
+        .ptn-tooltip-container[data-position="right"] .ptn-tooltip-content {
+            bottom: auto;
+            top: 50%;
+            left: calc(100% + 10px);
+            transform: translateY(-50%);
+        }
+
+        .ptn-tooltip-container[data-position="right"] .ptn-tooltip-content::after {
+            top: 50%;
+            right: 100%;
+            left: auto;
+            transform: translateY(-50%);
+            border-top-color: transparent;
+            border-right-color: #333;
+        }
+
+        /* Show tooltip */
+        .ptn-tooltip-content.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Icon type colors */
+        .ptn-tooltip-trigger[data-icon="info"] svg {
+            fill: var(--info);
+        }
+
+        .ptn-tooltip-trigger[data-icon="question"] svg {
+            fill: var(--neutral);
+        }
+
+        .ptn-tooltip-trigger[data-icon="warning"] svg {
+            fill: var(--warning);
+        }
+
+        .ptn-tooltip-trigger[data-icon="error"] svg {
+            fill: var(--error);
+        }
+
+        .ptn-tooltip-trigger[data-icon="success"] svg {
+            fill: var(--success);
+        }
+
+        /* Outlined style uses currentColor */
+        .ptn-tooltip-trigger[data-style="outlined"][data-icon="info"] svg {
+            color: var(--info);
+        }
+
+        .ptn-tooltip-trigger[data-style="outlined"][data-icon="question"] svg {
+            color: var(--neutral);
+        }
+
+        .ptn-tooltip-trigger[data-style="outlined"][data-icon="warning"] svg {
+            color: var(--warning);
+        }
+
+        .ptn-tooltip-trigger[data-style="outlined"][data-icon="error"] svg {
+            color: var(--error);
+        }
+
+        .ptn-tooltip-trigger[data-style="outlined"][data-icon="success"] svg {
+            color: var(--success);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Tooltips with style and position options</h1>
+
+        <section class="disc-example">
+
+
+            <div class="demo-section">
+                <h2>Solid Icon Style</h2>
+
+                <div class="demo-row">
+                    <span>Information icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="info" data-style="solid"
+                            aria-label="UIN definition" data-tooltip="UIN stands for University Identification Number.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Question icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="question" data-style="solid"
+                            aria-label="Username help" data-tooltip="Your username is your email address.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Warning icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="warning" data-style="solid" aria-label="Warning"
+                            data-tooltip="Action is needed.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Error icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="error" data-style="solid" aria-label="Error"
+                            data-tooltip="This address is missing a mailcode.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Success icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="success" data-style="solid" aria-label="Item OK"
+                            data-tooltip="This address is correct.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h2>Outlined Icon Style</h2>
+
+                <div class="demo-row">
+                    <span>Information icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="info" data-style="outlined"
+                            aria-label="UIN Definition" data-tooltip="UIN stands for University Identification Number.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Question icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="question" data-style="outlined"
+                            aria-label="Username help" data-tooltip="Your username is your email address.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Warning icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="warning" data-style="outlined"
+                            aria-label="Warning" data-tooltip="Action is needed.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Error icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="error" data-style="outlined" aria-label="Error"
+                            data-tooltip="This address is missing a mailcode.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Success icon:</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="success" data-style="outlined"
+                            aria-label="Item OK" data-tooltip="This address is correct.">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h2>Positioning Options</h2>
+
+                <div class="demo-row">
+                    <span>Top (default):</span>
+                    <div class="ptn-tooltip-container" data-position="top">
+                        <button class="ptn-tooltip-trigger" data-icon="info" data-style="solid"
+                            aria-label="More information" data-tooltip="Tooltip appears above">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Bottom:</span>
+                    <div class="ptn-tooltip-container" data-position="bottom">
+                        <button class="ptn-tooltip-trigger" data-icon="info" data-style="solid"
+                            aria-label="More information" data-tooltip="Tooltip appears below">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Tooltip positioned on left:</span>
+                    <div class="ptn-tooltip-container" data-position="left">
+                        <button class="ptn-tooltip-trigger" data-icon="info" data-style="solid"
+                            aria-label="More information" data-tooltip="Tooltip appears to the left">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <span>Tooltip positioned on right:</span>
+                    <div class="ptn-tooltip-container" data-position="right">
+                        <button class="ptn-tooltip-trigger" data-icon="info" data-style="solid"
+                            aria-label="More information" data-tooltip="Tooltip appears to the right">
+                        </button>
+                        <div class="ptn-tooltip-content" role="tooltip" aria-hidden="true"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- end-->
+
+
+            <h2>Usage Example</h2>
+            <div class="code-example">
+                &lt;!-- Solid style (default), positioned on top --&gt;<br>
+                &lt;div class="tooltip-container" data-position="top"&gt;<br>
+                &nbsp;&nbsp;&lt;button class="tooltip-trigger" <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-icon="info"<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-style="solid"<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aria-label="More information" <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-tooltip="Your tooltip text
+                here"&gt;<br>
+                &nbsp;&nbsp;&lt;/button&gt;<br>
+                &nbsp;&nbsp;&lt;div class="tooltip-content" role="tooltip" aria-hidden="true"&gt;&lt;/div&gt;<br>
+                &lt;/div&gt;<br><br>
+                &lt;!-- Outlined style, positioned on top --&gt;<br>
+                &lt;div class="tooltip-container" data-position="top"&gt;<br>
+                &nbsp;&nbsp;&lt;button class="tooltip-trigger" <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-icon="info"<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-style="outlined"<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aria-label="More information" <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-tooltip="Your tooltip text
+                here"&gt;<br>
+                &nbsp;&nbsp;&lt;/button&gt;<br>
+                &nbsp;&nbsp;&lt;div class="tooltip-content" role="tooltip" aria-hidden="true"&gt;&lt;/div&gt;<br>
+                &lt;/div&gt;
+            </div>
+            <p><strong>Available icons:</strong> info, question, warning, error, success</p>
+            <p><strong>Available styles:</strong> solid (default), outlined</p>
+            <p><strong>Available positions:</strong> top, bottom, left, right</p>
+
+        </section>
+
+        <section class="usage-notes">
+            <h2>Usage notes</h2>
+            <ul>
+                <li>To be comprehensive, this example shows far more styles than you would practically use. <strong>Be
+                        selective and consistent. </strong> Don't use multiple versions if one will do. Use the
+                    info OR question icon, not both. Use all solid, or all outlined, depending on what fits your design,
+                    but don't mix both.</li>
+                <li><strong>Available position values:</strong> top, bottom, left, right</li>
+                <li><strong>Available icon values:</strong> info, question, warning, error, success
+                </li>
+
+                <li>Example usage for icons:
+
+                    <ul>
+                        <li>Info or question: additional information, definition, short example</li>
+                        <li>Warning or error: as a badge alerting users to a condition or element that needs attention.
+                        </li>
+                        <li>Success icon: as a note that an element is correct</li>
+
+                    </ul>
+                </li>
+            </ul>
+
+
+        </section>
+    </div>
+
+    <script>
+        // SVG Icon Library
+        const TooltipIcons = {
+            solid: {
+                info: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="8" r="1.5" fill="white"/>
+                    <rect x="11" y="10.5" width="2" height="6.5" rx="1" fill="white"/>
+                </svg>`,
+
+                question: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3m.08 4h.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>`,
+
+                warning: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 20h20L12 2z"/>
+                    <path d="M12 9v4m0 4h.01" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>`,
+
+                error: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="13" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="16" r="1" fill="white"/>
+                </svg>`,
+
+                success: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>`
+            },
+            outlined: {
+                info: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="12" cy="8" r="1.5" fill="currentColor"/>
+                    <rect x="11" y="10.5" width="2" height="6.5" rx="1" fill="currentColor"/>
+                </svg>`,
+
+                question: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <circle cx="12" cy="17" r="1" fill="currentColor"/>
+                </svg>`,
+
+                warning: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 20h20L12 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="17" r="1" fill="currentColor"/>
+                </svg>`,
+
+                error: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <line x1="12" y1="8" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                </svg>`,
+
+                success: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>`
+            }
+        };
+
+        class AccessibleTooltip {
+            constructor(container) {
+                this.container = container;
+                this.trigger = container.querySelector('.ptn-tooltip-trigger');
+                this.content = container.querySelector('.ptn-tooltip-content');
+                this.isVisible = false;
+
+                // Set up unique ID for accessibility
+                this.tooltipId = 'tooltip-' + Math.random().toString(36).substr(2, 9);
+                this.content.id = this.tooltipId;
+                this.trigger.setAttribute('aria-describedby', this.tooltipId);
+
+                // Get tooltip text from data attribute
+                this.tooltipText = this.trigger.getAttribute('data-tooltip');
+                this.content.textContent = this.tooltipText;
+
+                // Inject SVG icon based on data-icon and data-style attributes
+                this.injectIcon();
+
+                this.init();
+            }
+
+            injectIcon() {
+                const iconName = this.trigger.getAttribute('data-icon') || 'info';
+                const iconStyle = this.trigger.getAttribute('data-style') || 'solid';
+
+                const iconSVG = TooltipIcons[iconStyle]?.[iconName];
+
+                if (iconSVG) {
+                    this.trigger.innerHTML = iconSVG;
+                } else {
+                    console.warn(`Icon "${iconName}" with style "${iconStyle}" not found. Using default "info" icon.`);
+                    this.trigger.innerHTML = TooltipIcons.solid.info;
+                }
+            }
+
+            init() {
+                // Mouse events
+                this.trigger.addEventListener('mouseenter', () => this.show());
+                this.trigger.addEventListener('mouseleave', () => this.hide());
+
+                // Focus events
+                this.trigger.addEventListener('focus', () => this.show());
+                this.trigger.addEventListener('blur', () => this.hide());
+
+                // Keyboard events
+                this.trigger.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.isVisible) {
+                        this.hide();
+                        e.preventDefault();
+                    }
+                });
+
+                // Touch events for mobile
+                this.trigger.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.toggle();
+                }, { passive: false });
+            }
+
+            show() {
+                this.content.classList.add('show');
+                this.content.setAttribute('aria-hidden', 'false');
+                this.isVisible = true;
+            }
+
+            hide() {
+                this.content.classList.remove('show');
+                this.content.setAttribute('aria-hidden', 'true');
+                this.isVisible = false;
+            }
+
+            toggle() {
+                if (this.isVisible) {
+                    this.hide();
+                } else {
+                    this.show();
+                }
+            }
+        }
+
+        // Initialize all tooltips on the page
+        document.addEventListener('DOMContentLoaded', () => {
+            const tooltipContainers = document.querySelectorAll('.ptn-tooltip-container');
+            tooltipContainers.forEach(container => {
+                new AccessibleTooltip(container);
+            });
+        });
+
+        // Hide all tooltips when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.ptn-tooltip-container')) {
+                document.querySelectorAll('.ptn-tooltip-content.show').forEach(tooltip => {
+                    tooltip.classList.remove('show');
+                    tooltip.setAttribute('aria-hidden', 'true');
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
