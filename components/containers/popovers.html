@@ -4,7 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Popover Component</title>
+    <title>Popover Component - Enhanced with Popper.js</title>
+
+    <!-- Popper.js for smart positioning -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+
     <style>
         /* Page formatting styles - don't copy */
         * {
@@ -49,6 +53,10 @@
 
         .intro h3 {
             margin: 0 0 0.5rem 0;
+            color: #0066cc;
+        }
+
+        .intro strong {
             color: #0066cc;
         }
 
@@ -111,7 +119,6 @@
             font-family: 'Courier New', monospace;
         }
 
-
         kbd {
             border: 1px solid #ccc;
             box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
@@ -144,6 +151,19 @@
             background: white;
             border-radius: 6px;
             text-align: center;
+        }
+
+        /* Edge case demo */
+        .edge-demo {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .edge-demo-item {
+            padding: 20px;
+            background: white;
+            border-radius: 6px;
         }
 
         fieldset {
@@ -254,35 +274,51 @@
             display: block;
         }
 
-        /* Popover arrow (optional decoration) */
-        .ptn-popover::before {
-            content: '';
+        /* Popover arrow  */
+        .ptn-popover-arrow {
             position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        /* Popover below trigger - arrow points UP */
+        .ptn-popover[data-popper-placement^='bottom']>.ptn-popover-arrow {
             top: -8px;
-            left: 20px;
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-bottom: 8px solid white;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid white;
+            filter: drop-shadow(0 -2px 2px rgba(0, 0, 0, 0.1));
+            transform: translateX(-10px);
         }
 
-        .ptn-popover::after {
-            content: '';
-            position: absolute;
-            top: -9px;
-            left: 20px;
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-bottom: 8px solid #d0d0d0;
-            z-index: -1;
+        /* Popover above trigger - arrow points DOWN */
+        .ptn-popover[data-popper-placement^='top']>.ptn-popover-arrow {
+            bottom: -8px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+            transform: translateX(-10px);
         }
 
-        /* Popover positioned below */
-        .ptn-popover[data-placement="bottom"] {
-            margin-top: 8px;
+        /* Popover to right of trigger - arrow points LEFT */
+        .ptn-popover[data-popper-placement^='right']>.ptn-popover-arrow {
+            left: -8px;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid white;
+            filter: drop-shadow(-2px 0 2px rgba(0, 0, 0, 0.1));
+            transform: translateY(-10px);
+        }
+
+        /* Popover to left of trigger - arrow points RIGHT */
+        .ptn-popover[data-popper-placement^='left']>.ptn-popover-arrow {
+            right: -8px;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 10px solid white;
+            filter: drop-shadow(2px 0 2px rgba(0, 0, 0, 0.1));
+            transform: translateY(-10px);
         }
 
         /* Popover Content Styles */
@@ -416,7 +452,44 @@
 
 <body>
     <div class="container">
-        <h1>Popover Component</h1>
+        <h1>Popover Component - Enhanced with Popper.js</h1>
+
+        <div class="intro">
+            <ul>
+                <li><strong>Smart Auto-Positioning:</strong> Popovers automatically flip to stay in viewport</li>
+                <li><strong>No More Cutoff:</strong> Intelligent edge detection prevents truncation</li>
+                <li><strong>Auto-Adjusting Arrows:</strong> Arrow pointer follows the trigger element</li>
+                <li><strong>Scroll Detection:</strong> Popovers close on scroll (prevents jarring flips)</li>
+            </ul>
+            <p><strong>Try it:</strong> Open a popover near the edge of the window - it automatically adjusts.</p>
+        </div>
+
+        <div class="quick-start">
+            <h3>Quick Start - Copy & Paste This:</h3>
+            <pre><code>&lt;!-- Add Popper.js to your &lt;head&gt; --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- Basic popover structure --&gt;
+&lt;button class="ptn-popover-trigger" 
+        data-ptn-popover-trigger="popover1" 
+        aria-expanded="false"
+        aria-controls="popover1"&gt;
+    Show Info
+&lt;/button&gt;
+
+&lt;div id="popover1" 
+     class="ptn-popover" 
+     role="dialog" 
+     aria-labelledby="popover1-title"
+     data-backdrop="false"&gt;
+    &lt;div class="ptn-popover-arrow" data-popper-arrow&gt;&lt;/div&gt;
+    &lt;h3 id="popover1-title" class="ptn-popover-header"&gt;Title&lt;/h3&gt;
+    &lt;div class="ptn-popover-content"&gt;
+        &lt;p&gt;Content goes here&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+            <p><strong>That's it.</strong> The JavaScript handles all positioning automatically using Popper.js.</p>
+        </div>
 
         <!-- Example 1: Basic Popover -->
         <div class="example-section">
@@ -426,13 +499,12 @@
                 Show Info
             </button>
 
-            <div id="popover1" class="ptn-popover" role="dialog" aria-labelledby="popover1-title"
-                data-placement="bottom" data-backdrop="false">
+            <div id="popover1" class="ptn-popover" role="dialog" aria-labelledby="popover1-title" data-backdrop="false">
+                <div class="ptn-popover-arrow" data-popper-arrow></div>
                 <h3 id="popover1-title" class="ptn-popover-header">Quick Info</h3>
                 <div class="ptn-popover-content">
-                    <p>This is a simple popover with some informational content. Perfect for additional
-                        context.
-                    </p>
+                    <p>This is a simple popover with some informational content. Perfect for additional context.</p>
+                    <p><strong>Notice:</strong> The arrow automatically adjusts based on popover position!</p>
                 </div>
             </div>
         </div>
@@ -445,8 +517,8 @@
                 Actions ▾
             </button>
 
-            <div id="popover2" class="ptn-popover" role="menu" aria-labelledby="popover2-label" data-placement="bottom"
-                data-backdrop="false">
+            <div id="popover2" class="ptn-popover" role="menu" aria-labelledby="popover2-label" data-backdrop="false">
+                <div class="ptn-popover-arrow" data-popper-arrow></div>
                 <span id="popover2-label" class="sr-only">Actions menu</span>
                 <div class="ptn-popover-menu">
                     <button class="ptn-popover-menu-item" role="menuitem">Edit Item</button>
@@ -467,11 +539,11 @@
             </button>
 
             <div id="popover3" class="ptn-popover ptn-popover-large" role="dialog" aria-labelledby="popover3-title"
-                data-placement="bottom" data-backdrop="true">
+                data-backdrop="true">
+                <div class="ptn-popover-arrow" data-popper-arrow></div>
                 <h3 id="popover3-title" class="ptn-popover-header">Filter Results</h3>
                 <div class="ptn-popover-content">
                     <fieldset class="filter-group">
-
                         <legend>Category</legend>
                         <div class="checkbox-option">
                             <input type="checkbox" id="cat1" name="category" value="design">
@@ -505,7 +577,7 @@
             </div>
         </div>
 
-        <!-- Example 4: Multiple on Same Row -->
+        <!-- Example 4: Different Sizes -->
         <div class="example-section">
             <h2>Example 4: Different Sizes</h2>
             <div class="demo-grid">
@@ -515,7 +587,8 @@
                         Small
                     </button>
                     <div id="popover4a" class="ptn-popover ptn-popover-small" role="dialog" aria-label="Small popover"
-                        data-placement="bottom" data-backdrop="false">
+                        data-backdrop="false">
+                        <div class="ptn-popover-arrow" data-popper-arrow></div>
                         <div class="ptn-popover-content">
                             <strong>Small</strong>
                             <p>Compact popover.</p>
@@ -529,7 +602,8 @@
                         Medium (Default)
                     </button>
                     <div id="popover4b" class="ptn-popover" role="dialog" aria-label="Medium popover"
-                        data-placement="bottom" data-backdrop="false">
+                        data-backdrop="false">
+                        <div class="ptn-popover-arrow" data-popper-arrow></div>
                         <div class="ptn-popover-content">
                             <strong>Medium</strong>
                             <p>This uses the default size without any size class.</p>
@@ -543,7 +617,8 @@
                         Wide
                     </button>
                     <div id="popover4c" class="ptn-popover ptn-popover-wide" role="dialog" aria-label="Wide popover"
-                        data-placement="bottom" data-backdrop="false">
+                        data-backdrop="false">
+                        <div class="ptn-popover-arrow" data-popper-arrow></div>
                         <div class="ptn-popover-content">
                             <strong>Wide</strong>
                             <p>This popover has much more horizontal space for content that needs it, like forms or data
@@ -554,28 +629,101 @@
             </div>
         </div>
 
+        <!-- Example 5: Edge Cases -->
+        <div class="example-section">
+            <h2>Example 5: Edge Cases (Auto-Adjusts to Stay Visible)</h2>
+            <p>These buttons are positioned at the edges - watch how the popovers intelligently reposition!</p>
+
+            <div class="edge-demo">
+                <div class="edge-demo-item">
+                    <button class="ptn-popover-trigger" data-ptn-popover-trigger="popover-left" aria-expanded="false"
+                        aria-controls="popover-left">
+                        Left Edge
+                    </button>
+                    <div id="popover-left" class="ptn-popover" role="dialog" aria-label="Left edge popover"
+                        data-backdrop="false">
+                        <div class="ptn-popover-arrow" data-popper-arrow></div>
+                        <div class="ptn-popover-content">
+                            <strong>Left Edge</strong>
+                            <p>This popover won't get cut off even though the button is on the left edge!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edge-demo-item">
+                    <button class="ptn-popover-trigger" data-ptn-popover-trigger="popover-right" aria-expanded="false"
+                        aria-controls="popover-right">
+                        Right Edge
+                    </button>
+                    <div id="popover-right" class="ptn-popover" role="dialog" aria-label="Right edge popover"
+                        data-backdrop="false">
+                        <div class="ptn-popover-arrow" data-popper-arrow></div>
+                        <div class="ptn-popover-content">
+                            <strong>Right Edge</strong>
+                            <p>This popover automatically adjusts to stay fully visible even at the right edge!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <section class="usage-notes">
-            <h2>Usage notes</h2>
+            <h2>Usage Notes</h2>
+
+            <h3>What's Required:</h3>
             <ul>
-                <li>Popovers are triggered by buttons. Press Escape to close, or click outside.</li>
-                <li>Backdrop control: Add <code>data-backdrop="false"</code> to disable the overlay (more typical for
-                    popovers), or
-                    <code>data-backdrop="true"</code> to enable it (better for modal-like behavior). Default is enabled.
+                <li><strong>Popper.js:</strong> Include the script in your <code>&lt;head&gt;</code> tag</li>
+                <li><strong>Arrow element:</strong> Add
+                    <code>&lt;div class="ptn-popover-arrow" data-popper-arrow&gt;&lt;/div&gt;</code>
+                    inside each popover for the pointer
                 </li>
-                <li><strong>Size control:</strong> Add size classes: <code>ptn-popover-small</code>,
-                    <code>ptn-popover-medium</code>
-                    (default), <code>ptn-popover-large</code>, <code>ptn-popover-wide</code>,
-                    <code>ptn-popover-full</code>, or
-                    <code>ptn-popover-auto</code>.
+                <li><strong>Unique IDs:</strong> Each popover needs a unique ID that matches its trigger's
+                    <code>data-ptn-popover-trigger</code> attribute
                 </li>
             </ul>
 
+            <h3>Features:</h3>
+            <ul>
+                <li><strong>Smart Positioning:</strong> Automatically flips popover to top/bottom/left/right based on
+                    available space</li>
+                <li><strong>Edge Detection:</strong> Prevents popover from being cut off at viewport edges</li>
+                <li><strong>Arrow Positioning:</strong> Arrow automatically follows the trigger element</li>
+                <li><strong>Scroll Behavior:</strong> Popovers automatically close when scrolling starts (prevents
+                    jarring flips)</li>
+                <li><strong>Keyboard Navigation:</strong> Press <kbd>Escape</kbd> to close, or click outside</li>
+                <li><strong>Backdrop Control:</strong> Add <code>data-backdrop="false"</code> to disable overlay, or
+                    <code>data-backdrop="true"</code> to enable it (default is false)
+                </li>
+                <li><strong>Size Control:</strong> Add size classes: <code>ptn-popover-small</code>,
+                    <code>ptn-popover-medium</code>, <code>ptn-popover-large</code>, <code>ptn-popover-wide</code>,
+                    <code>ptn-popover-full</code>, or <code>ptn-popover-auto</code>
+                </li>
+                <li><strong>Focus Management:</strong> Automatically focuses first interactive element when opened</li>
+                <li><strong>Menu Support:</strong> Arrow key navigation for <code>role="menu"</code> popovers</li>
+            </ul>
+
+            <h3>Browser Support:</h3>
+            <ul>
+                <li>Works in all modern browsers (Chrome, Firefox, Safari, Edge)</li>
+                <li>Popper.js handles the heavy lifting of positioning calculations</li>
+                <li>Degrades gracefully if Popper.js fails to load (basic positioning still works)</li>
+            </ul>
+
+            <h3>Configuration Options:</h3>
+            <p>The Popper.js configuration in the code includes:</p>
+            <ul>
+                <li><strong>placement:</strong> Default is 'bottom', but auto-flips as needed</li>
+                <li><strong>offset:</strong> 8px gap between trigger and popover</li>
+                <li><strong>flip:</strong> Tries bottom → top → right → left to find best position</li>
+                <li><strong>preventOverflow:</strong> 10px padding from viewport edges</li>
+            </ul>
         </section>
     </div>
+
     <script>
         /**
-         * Supports multiple instances, keyboard navigation, and ARIA attributes
+         * Enhanced Popover Component with Popper.js
+         * Requires: Popper.js v2.11.8 or higher
          */
         class Popover {
             // Static array to track all popover instances
@@ -586,6 +734,7 @@
                 this.popover = popover;
                 this.backdrop = null;
                 this.isOpen = false;
+                this.popperInstance = null;
 
                 // Add this instance to the static array
                 Popover.instances.push(this);
@@ -635,14 +784,47 @@
 
                 this.isOpen = true;
 
-                // Position the popover
-                this.position();
-
                 // Update ARIA and visibility
                 this.trigger.setAttribute('aria-expanded', 'true');
                 this.popover.setAttribute('data-show', '');
 
-                // Create backdrop for better UX
+                // Create Popper instance for smart positioning
+                if (typeof Popper !== 'undefined') {
+                    this.popperInstance = Popper.createPopper(this.trigger, this.popover, {
+                        placement: 'bottom',
+                        modifiers: [
+                            {
+                                name: 'offset',
+                                options: {
+                                    offset: [0, 8], // 8px gap from trigger
+                                },
+                            },
+                            {
+                                name: 'flip',
+                                options: {
+                                    fallbackPlacements: ['top', 'right', 'left'],
+                                },
+                            },
+                            {
+                                name: 'preventOverflow',
+                                options: {
+                                    padding: 10, // 10px from viewport edges
+                                },
+                            },
+                            {
+                                name: 'arrow',
+                                options: {
+                                    padding: 8, // Keep arrow 8px from popover edges
+                                },
+                            },
+                        ],
+                    });
+                } else {
+                    console.warn('Popper.js not loaded - using basic positioning');
+                    this.fallbackPosition();
+                }
+
+                // Create backdrop
                 this.createBackdrop();
 
                 // Focus management
@@ -659,6 +841,12 @@
                 this.trigger.setAttribute('aria-expanded', 'false');
                 this.popover.removeAttribute('data-show');
 
+                // Destroy Popper instance
+                if (this.popperInstance) {
+                    this.popperInstance.destroy();
+                    this.popperInstance = null;
+                }
+
                 // Remove backdrop
                 this.removeBackdrop();
 
@@ -668,21 +856,24 @@
                 }
             }
 
-            position() {
+            /**
+             * Fallback positioning if Popper.js is not available
+             */
+            fallbackPosition() {
                 const triggerRect = this.trigger.getBoundingClientRect();
                 const popoverRect = this.popover.getBoundingClientRect();
+                const padding = 10;
+                const gap = 8;
 
-                // Position below the trigger by default
-                let top = triggerRect.bottom + window.scrollY;
+                let top = triggerRect.bottom + window.scrollY + gap;
                 let left = triggerRect.left + window.scrollX;
 
-                // Adjust if popover would go off screen
-                if (left + popoverRect.width > window.innerWidth) {
-                    left = window.innerWidth - popoverRect.width - 10;
+                // Basic edge detection
+                if (left + popoverRect.width > window.innerWidth - padding) {
+                    left = window.innerWidth - popoverRect.width - padding;
                 }
-
-                if (left < 10) {
-                    left = 10;
+                if (left < padding) {
+                    left = padding;
                 }
 
                 this.popover.style.top = `${top}px`;
@@ -691,7 +882,7 @@
 
             createBackdrop() {
                 // Check if backdrop is enabled for this popover
-                const backdropEnabled = this.popover.getAttribute('data-backdrop') !== 'false';
+                const backdropEnabled = this.popover.getAttribute('data-backdrop') === 'true';
 
                 if (!backdropEnabled) {
                     return;
@@ -756,6 +947,8 @@
 
                 if (popover) {
                     new Popover(trigger, popover);
+                } else {
+                    console.warn(`Popover with id "${popoverId}" not found for trigger`);
                 }
             });
 
@@ -779,6 +972,24 @@
                     }
                 });
             });
+
+            // Close popovers on scroll to prevent jarring flips
+            let scrollTimeout;
+            document.addEventListener('scroll', (e) => {
+                // Clear any existing timeout
+                clearTimeout(scrollTimeout);
+
+                // Debounce slightly to avoid closing during tiny scroll adjustments
+                scrollTimeout = setTimeout(() => {
+                    Popover.instances.forEach(instance => {
+                        if (instance.isOpen) {
+                            instance.close();
+                        }
+                    });
+                }, 50); // 50ms debounce
+            }, true); // Use capture phase to catch all scroll events
+
+            console.log(`Initialized ${Popover.instances.length} popover(s)`);
         });
     </script>
 </body>

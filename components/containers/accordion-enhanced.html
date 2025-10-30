@@ -133,10 +133,12 @@
         }
 
         .ptn-accordion {
-            margin: 2rem auto;
+            margin: 2rem 0;
             border: 1px solid #ccc;
             border-radius: 8px;
             overflow: hidden;
+            /*this sets a max width -- remove it if you are constraining the width some other way*/
+            max-width: 960px;
         }
 
         .ptn-accordion-item {
@@ -168,8 +170,15 @@
             font-family: inherit;
         }
 
-        .ptn-accordion-trigger:hover {
-            background-color: #ebebeb;
+        .ptn-accordion-trigger:hover,
+        .ptn-accordion-trigger:focus {
+            background-color: #e8eff3;
+        }
+
+        .ptn-accordion-trigger:hover .ptn-accordion-icon,
+        .ptn-accordion-trigger:focus .ptn-accordion-icon {
+            color: #2170CA;
+            transform: scale(1.1);
         }
 
         .ptn-accordion-trigger:focus {
@@ -215,6 +224,7 @@
             padding: 0.5rem 0;
         }
 
+        /* change or remove these rules so buttons will  match your application */
         .ptn-accordion-controls button {
             padding: 0.5rem 1rem;
             background-color: #f5f5f5;
@@ -226,12 +236,13 @@
             transition: background-color 0.2s;
         }
 
-        .ptn-accordion-controls button:hover {
-            background-color: #e5e5e5;
+        .ptn-accordion-controls button:hover,
+        .ptn-accordion-controls button:focus {
+            background-color: #d9dadf;
         }
 
         .ptn-accordion-controls button:focus {
-            outline: 2px solid #0066cc;
+            outline: 2px dotted #393939;
             outline-offset: 2px;
         }
 
