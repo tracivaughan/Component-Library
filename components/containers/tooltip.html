@@ -530,6 +530,8 @@
                     info OR question icon, not both. Use all solid, or all outlined, depending on what fits your design,
                     but don't mix both.</li>
                 <li><strong>Available position values:</strong> top, bottom, left, right</li>
+                <li>Tooltip position will adjust if there is not room; for example, tooltips set to appear on the right
+                    will appear on the left if there is not enough room in the viewport. </li>
                 <li><strong>Available icon values:</strong> info, question, warning, error, success
                 </li>
 
@@ -554,61 +556,61 @@
         const TooltipIcons = {
             solid: {
                 info: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10"/>
-                    <circle cx="12" cy="8" r="1.5" fill="white"/>
-                    <rect x="11" y="10.5" width="2" height="6.5" rx="1" fill="white"/>
-                </svg>`,
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="8" r="1.5" fill="white"/>
+            <rect x="11" y="10.5" width="2" height="6.5" rx="1" fill="white"/>
+        </svg>`,
 
                 question: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3m.08 4h.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>`,
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3m.08 4h.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`,
 
                 warning: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 20h20L12 2z"/>
-                    <path d="M12 9v4m0 4h.01" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                </svg>`,
+            <path d="M12 2L2 20h20L12 2z"/>
+            <path d="M12 9v4m0 4h.01" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
 
                 error: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="13" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="12" cy="16" r="1" fill="white"/>
-                </svg>`,
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="13" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="16" r="1" fill="white"/>
+        </svg>`,
 
                 success: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>`
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`
             },
             outlined: {
                 info: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-                    <circle cx="12" cy="8" r="1.5" fill="currentColor"/>
-                    <rect x="11" y="10.5" width="2" height="6.5" rx="1" fill="currentColor"/>
-                </svg>`,
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="8" r="1.5" fill="currentColor"/>
+            <rect x="11" y="10.5" width="2" height="6.5" rx="1" fill="currentColor"/>
+        </svg>`,
 
                 question: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    <circle cx="12" cy="17" r="1" fill="currentColor"/>
-                </svg>`,
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <circle cx="12" cy="17" r="1" fill="currentColor"/>
+        </svg>`,
 
                 warning: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 20h20L12 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                    <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="12" cy="17" r="1" fill="currentColor"/>
-                </svg>`,
+            <path d="M12 2L2 20h20L12 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="17" r="1" fill="currentColor"/>
+        </svg>`,
 
                 error: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-                    <line x1="12" y1="8" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="12" cy="16" r="1" fill="currentColor"/>
-                </svg>`,
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="8" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="16" r="1" fill="currentColor"/>
+        </svg>`,
 
                 success: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-                    <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>`
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`
             }
         };
 
@@ -618,6 +620,7 @@
                 this.trigger = container.querySelector('.ptn-tooltip-trigger');
                 this.content = container.querySelector('.ptn-tooltip-content');
                 this.isVisible = false;
+                this.originalPosition = this.container.getAttribute('data-position') || 'top';
 
                 // Set up unique ID for accessibility
                 this.tooltipId = 'tooltip-' + Math.random().toString(36).substr(2, 9);
@@ -648,6 +651,40 @@
                 }
             }
 
+            adjustPosition() {
+                const rect = this.content.getBoundingClientRect();
+                const containerRect = this.container.getBoundingClientRect();
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const padding = 10; // safety margin from viewport edge
+
+                // Reset to original position first
+                this.container.setAttribute('data-position', this.originalPosition);
+
+                // Wait for position to update, then check again
+                requestAnimationFrame(() => {
+                    const updatedRect = this.content.getBoundingClientRect();
+
+                    // Check horizontal overflow
+                    if (updatedRect.right > viewportWidth - padding) {
+                        this.container.setAttribute('data-position', 'left');
+                    } else if (updatedRect.left < padding) {
+                        this.container.setAttribute('data-position', 'right');
+                    }
+
+                    // Check vertical overflow (for left/right positioned tooltips or if still overflowing)
+                    requestAnimationFrame(() => {
+                        const finalRect = this.content.getBoundingClientRect();
+
+                        if (finalRect.top < padding) {
+                            this.container.setAttribute('data-position', 'bottom');
+                        } else if (finalRect.bottom > viewportHeight - padding) {
+                            this.container.setAttribute('data-position', 'top');
+                        }
+                    });
+                });
+            }
+
             init() {
                 // Mouse events
                 this.trigger.addEventListener('mouseenter', () => this.show());
@@ -676,12 +713,18 @@
                 this.content.classList.add('show');
                 this.content.setAttribute('aria-hidden', 'false');
                 this.isVisible = true;
+
+                // Check and adjust position after showing
+                requestAnimationFrame(() => this.adjustPosition());
             }
 
             hide() {
                 this.content.classList.remove('show');
                 this.content.setAttribute('aria-hidden', 'true');
                 this.isVisible = false;
+
+                // Reset to original position when hiding
+                this.container.setAttribute('data-position', this.originalPosition);
             }
 
             toggle() {
