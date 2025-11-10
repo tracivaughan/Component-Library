@@ -452,7 +452,7 @@
 
 <body>
     <div class="container">
-        <h1>Popover Component - Enhanced with Popper.js</h1>
+        <h1>Popover Component - Enhanced with Popper.js & Accessibility</h1>
 
         <div class="intro">
             <ul>
@@ -460,6 +460,7 @@
                 <li><strong>No More Cutoff:</strong> Intelligent edge detection prevents truncation</li>
                 <li><strong>Auto-Adjusting Arrows:</strong> Arrow pointer follows the trigger element</li>
                 <li><strong>Scroll Detection:</strong> Popovers close on scroll (prevents jarring flips)</li>
+                <li><strong>Screen Reader Optimized:</strong> Full NVDA support with proper content announcements</li>
             </ul>
             <p><strong>Try it:</strong> Open a popover near the edge of the window - it automatically adjusts.</p>
         </div>
@@ -469,7 +470,7 @@
             <pre><code>&lt;!-- Add Popper.js to your &lt;head&gt; --&gt;
 &lt;script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"&gt;&lt;/script&gt;
 
-&lt;!-- Basic popover structure --&gt;
+&lt;!-- Informational popover (use role="region") --&gt;
 &lt;button class="ptn-popover-trigger" 
         data-ptn-popover-trigger="popover1" 
         aria-expanded="false"
@@ -479,16 +480,37 @@
 
 &lt;div id="popover1" 
      class="ptn-popover" 
-     role="dialog" 
+     role="region" 
      aria-labelledby="popover1-title"
+     aria-describedby="popover1-content"
      data-backdrop="false"&gt;
     &lt;div class="ptn-popover-arrow" data-popper-arrow&gt;&lt;/div&gt;
     &lt;h3 id="popover1-title" class="ptn-popover-header"&gt;Title&lt;/h3&gt;
-    &lt;div class="ptn-popover-content"&gt;
+    &lt;div id="popover1-content" class="ptn-popover-content"&gt;
         &lt;p&gt;Content goes here&lt;/p&gt;
     &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Interactive popover (use role="dialog") --&gt;
+&lt;div id="popover2" 
+     class="ptn-popover" 
+     role="dialog" 
+     aria-labelledby="popover2-title"
+     aria-describedby="popover2-content"
+     data-backdrop="true"&gt;
+    &lt;div class="ptn-popover-arrow" data-popper-arrow&gt;&lt;/div&gt;
+    &lt;h3 id="popover2-title" class="ptn-popover-header"&gt;Form Title&lt;/h3&gt;
+    &lt;div id="popover2-content" class="ptn-popover-content"&gt;
+        &lt;!-- Interactive form elements --&gt;
+    &lt;/div&gt;
 &lt;/div&gt;</code></pre>
-            <p><strong>That's it.</strong> The JavaScript handles all positioning automatically using Popper.js.</p>
+            <p><strong>Key changes for accessibility:</strong></p>
+            <ul>
+                <li>Use <code>role="region"</code> for informational popovers</li>
+                <li>Use <code>role="dialog"</code> for interactive popovers (forms, filters)</li>
+                <li>Always add <code>aria-describedby</code> pointing to content ID</li>
+                <li>Add unique IDs to both title and content elements</li>
+            </ul>
         </div>
 
         <!-- Example 1: Basic Popover -->
@@ -499,10 +521,11 @@
                 Show Info
             </button>
 
-            <div id="popover1" class="ptn-popover" role="dialog" aria-labelledby="popover1-title" data-backdrop="false">
+            <div id="popover1" class="ptn-popover" role="region" aria-labelledby="popover1-title"
+                aria-describedby="popover1-content" data-backdrop="false">
                 <div class="ptn-popover-arrow" data-popper-arrow></div>
                 <h3 id="popover1-title" class="ptn-popover-header">Quick Info</h3>
-                <div class="ptn-popover-content">
+                <div id="popover1-content" class="ptn-popover-content">
                     <p>This is a simple popover with some informational content. Perfect for additional context.</p>
                     <p><strong>Notice:</strong> The arrow automatically adjusts based on popover position!</p>
                 </div>
@@ -539,10 +562,10 @@
             </button>
 
             <div id="popover3" class="ptn-popover ptn-popover-large" role="dialog" aria-labelledby="popover3-title"
-                data-backdrop="true">
+                aria-describedby="popover3-content" data-backdrop="true">
                 <div class="ptn-popover-arrow" data-popper-arrow></div>
                 <h3 id="popover3-title" class="ptn-popover-header">Filter Results</h3>
-                <div class="ptn-popover-content">
+                <div id="popover3-content" class="ptn-popover-content">
                     <fieldset class="filter-group">
                         <legend>Category</legend>
                         <div class="checkbox-option">
@@ -586,11 +609,11 @@
                         aria-controls="popover4a">
                         Small
                     </button>
-                    <div id="popover4a" class="ptn-popover ptn-popover-small" role="dialog" aria-label="Small popover"
-                        data-backdrop="false">
+                    <div id="popover4a" class="ptn-popover ptn-popover-small" role="region"
+                        aria-labelledby="popover4a-title" aria-describedby="popover4a-content" data-backdrop="false">
                         <div class="ptn-popover-arrow" data-popper-arrow></div>
-                        <div class="ptn-popover-content">
-                            <strong>Small</strong>
+                        <div id="popover4a-content" class="ptn-popover-content">
+                            <strong id="popover4a-title">Small</strong>
                             <p>Compact popover.</p>
                         </div>
                     </div>
@@ -601,11 +624,11 @@
                         aria-controls="popover4b">
                         Medium (Default)
                     </button>
-                    <div id="popover4b" class="ptn-popover" role="dialog" aria-label="Medium popover"
-                        data-backdrop="false">
+                    <div id="popover4b" class="ptn-popover" role="region" aria-labelledby="popover4b-title"
+                        aria-describedby="popover4b-content" data-backdrop="false">
                         <div class="ptn-popover-arrow" data-popper-arrow></div>
-                        <div class="ptn-popover-content">
-                            <strong>Medium</strong>
+                        <div id="popover4b-content" class="ptn-popover-content">
+                            <strong id="popover4b-title">Medium</strong>
                             <p>This uses the default size without any size class.</p>
                         </div>
                     </div>
@@ -616,11 +639,11 @@
                         aria-controls="popover4c">
                         Wide
                     </button>
-                    <div id="popover4c" class="ptn-popover ptn-popover-wide" role="dialog" aria-label="Wide popover"
-                        data-backdrop="false">
+                    <div id="popover4c" class="ptn-popover ptn-popover-wide" role="region"
+                        aria-labelledby="popover4c-title" aria-describedby="popover4c-content" data-backdrop="false">
                         <div class="ptn-popover-arrow" data-popper-arrow></div>
-                        <div class="ptn-popover-content">
-                            <strong>Wide</strong>
+                        <div id="popover4c-content" class="ptn-popover-content">
+                            <strong id="popover4c-title">Wide</strong>
                             <p>This popover has much more horizontal space for content that needs it, like forms or data
                                 tables.</p>
                         </div>
@@ -640,11 +663,11 @@
                         aria-controls="popover-left">
                         Left Edge
                     </button>
-                    <div id="popover-left" class="ptn-popover" role="dialog" aria-label="Left edge popover"
-                        data-backdrop="false">
+                    <div id="popover-left" class="ptn-popover" role="region" aria-labelledby="popover-left-title"
+                        aria-describedby="popover-left-content" data-backdrop="false">
                         <div class="ptn-popover-arrow" data-popper-arrow></div>
-                        <div class="ptn-popover-content">
-                            <strong>Left Edge</strong>
+                        <div id="popover-left-content" class="ptn-popover-content">
+                            <strong id="popover-left-title">Left Edge</strong>
                             <p>This popover won't get cut off even though the button is on the left edge!</p>
                         </div>
                     </div>
@@ -655,11 +678,11 @@
                         aria-controls="popover-right">
                         Right Edge
                     </button>
-                    <div id="popover-right" class="ptn-popover" role="dialog" aria-label="Right edge popover"
-                        data-backdrop="false">
+                    <div id="popover-right" class="ptn-popover" role="region" aria-labelledby="popover-right-title"
+                        aria-describedby="popover-right-content" data-backdrop="false">
                         <div class="ptn-popover-arrow" data-popper-arrow></div>
-                        <div class="ptn-popover-content">
-                            <strong>Right Edge</strong>
+                        <div id="popover-right-content" class="ptn-popover-content">
+                            <strong id="popover-right-title">Right Edge</strong>
                             <p>This popover automatically adjusts to stay fully visible even at the right edge!</p>
                         </div>
                     </div>
@@ -680,9 +703,25 @@
                 <li><strong>Unique IDs:</strong> Each popover needs a unique ID that matches its trigger's
                     <code>data-ptn-popover-trigger</code> attribute
                 </li>
+                <li><strong>Content IDs:</strong> Add IDs to title and content elements for <code>aria-labelledby</code>
+                    and <code>aria-describedby</code></li>
             </ul>
 
-            <h3>Features:</h3>
+            <h3>Accessibility Features:</h3>
+            <ul>
+                <li><strong>Role Selection:</strong> Use <code>role="region"</code> for informational popovers,
+                    <code>role="dialog"</code> for interactive ones, <code>role="menu"</code> for action menus
+                </li>
+                <li><strong>Content Announcement:</strong> <code>aria-describedby</code> ensures screen readers announce
+                    full content</li>
+                <li><strong>Proper Labeling:</strong> <code>aria-labelledby</code> provides accessible names for all
+                    popovers</li>
+                <li><strong>Focus Management:</strong> Automatically focuses first interactive element when opened</li>
+                <li><strong>Keyboard Navigation:</strong> Press <kbd>Escape</kbd> to close, Arrow keys for menu
+                    navigation</li>
+            </ul>
+
+            <h3>Technical Features:</h3>
             <ul>
                 <li><strong>Smart Positioning:</strong> Automatically flips popover to top/bottom/left/right based on
                     available space</li>
@@ -690,7 +729,6 @@
                 <li><strong>Arrow Positioning:</strong> Arrow automatically follows the trigger element</li>
                 <li><strong>Scroll Behavior:</strong> Popovers automatically close when scrolling starts (prevents
                     jarring flips)</li>
-                <li><strong>Keyboard Navigation:</strong> Press <kbd>Escape</kbd> to close, or click outside</li>
                 <li><strong>Backdrop Control:</strong> Add <code>data-backdrop="false"</code> to disable overlay, or
                     <code>data-backdrop="true"</code> to enable it (default is false)
                 </li>
@@ -698,13 +736,13 @@
                     <code>ptn-popover-medium</code>, <code>ptn-popover-large</code>, <code>ptn-popover-wide</code>,
                     <code>ptn-popover-full</code>, or <code>ptn-popover-auto</code>
                 </li>
-                <li><strong>Focus Management:</strong> Automatically focuses first interactive element when opened</li>
                 <li><strong>Menu Support:</strong> Arrow key navigation for <code>role="menu"</code> popovers</li>
             </ul>
 
-            <h3>Browser Support:</h3>
+            <h3>Browser & Screen Reader Support:</h3>
             <ul>
-                <li>Works in all modern browsers (Chrome, Firefox, Safari, Edge)</li>
+                <li>Works in all modern browsers (Chrome, Firefox, Safari, Edge); compatible with NVDA, JAWS, and
+                    VoiceOver </li>
                 <li>Popper.js handles the heavy lifting of positioning calculations</li>
                 <li>Degrades gracefully if Popper.js fails to load (basic positioning still works)</li>
             </ul>
@@ -722,7 +760,7 @@
 
     <script>
         /**
-         * Enhanced Popover Component with Popper.js
+         * Enhanced Popover Component with Popper.js and Screen Reader Support
          * Requires: Popper.js v2.11.8 or higher
          */
         class Popover {
@@ -788,6 +826,17 @@
                 this.trigger.setAttribute('aria-expanded', 'true');
                 this.popover.setAttribute('data-show', '');
 
+                // For screen readers: announce content when opened for region popovers
+                const popoverRole = this.popover.getAttribute('role');
+                if (popoverRole === 'region') {
+                    // Temporarily add aria-live to announce content
+                    this.popover.setAttribute('aria-live', 'polite');
+                    // Remove after announcement to prevent re-announcements on updates
+                    setTimeout(() => {
+                        this.popover.removeAttribute('aria-live');
+                    }, 1000);
+                }
+
                 // Create Popper instance for smart positioning
                 if (typeof Popper !== 'undefined') {
                     this.popperInstance = Popper.createPopper(this.trigger, this.popover, {
@@ -840,6 +889,9 @@
                 // Update ARIA and visibility
                 this.trigger.setAttribute('aria-expanded', 'false');
                 this.popover.removeAttribute('data-show');
+
+                // Remove aria-live if it was set
+                this.popover.removeAttribute('aria-live');
 
                 // Destroy Popper instance
                 if (this.popperInstance) {
@@ -989,7 +1041,7 @@
                 }, 50); // 50ms debounce
             }, true); // Use capture phase to catch all scroll events
 
-            console.log(`Initialized ${Popover.instances.length} popover(s)`);
+            console.log(`Initialized ${Popover.instances.length} popover(s) with accessibility enhancements`);
         });
     </script>
 </body>
